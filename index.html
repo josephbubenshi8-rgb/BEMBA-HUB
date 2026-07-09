@@ -1,0 +1,1939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BembaHub Portal</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ═══════════════════ TOKENS ═══════════════════ */
+:root {
+  --earth:       #7C3A12;
+  --copper:      #C8793A;
+  --gold:        #E6A832;
+  --gold-light:  #FFF3CD;
+  --bark:        #2D1506;
+  --cream:       #FBF7F2;
+  --green:       #1E5C20;
+  --green-light: #E6F4E7;
+  --sky:         #1251A3;
+  --sky-light:   #E3EEFF;
+  --red:         #B71C1C;
+  --red-light:   #FFEBEE;
+  --purple:      #4A1299;
+  --purple-light:#EDE7F6;
+  --white:       #FFFFFF;
+  --g50:  #FAFAFA;
+  --g100: #F5F5F5;
+  --g200: #EEEEEE;
+  --g300: #E0E0E0;
+  --g500: #9E9E9E;
+  --g700: #616161;
+  --g900: #212121;
+  --sidebar-w: 240px;
+  --sidebar-collapsed: 60px;
+  --topbar-h: 56px;
+  --radius: 10px;
+  --shadow-sm: 0 1px 4px rgba(45,21,6,.08);
+  --shadow:    0 4px 16px rgba(45,21,6,.12);
+  --shadow-lg: 0 8px 32px rgba(45,21,6,.18);
+  --trans: all .2s ease;
+}
+
+/* ═══════════════════ RESET ═══════════════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:'Inter',sans-serif;font-size:14px;background:var(--cream);color:var(--g900)}
+button,input,select,textarea{font-family:inherit}
+a{text-decoration:none;color:inherit}
+
+/* ═══════════════════ LAYOUT SHELL ═══════════════════ */
+#app { display:flex; height:100vh; overflow:hidden; }
+
+/* ── SIDEBAR ── */
+#sidebar {
+  width: var(--sidebar-w);
+  background: var(--bark);
+  display: flex; flex-direction: column;
+  flex-shrink: 0;
+  transition: width .25s ease;
+  overflow: hidden;
+  z-index: 200;
+}
+#sidebar.collapsed { width: var(--sidebar-collapsed); }
+
+.sb-brand {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 14px; height: var(--topbar-h);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  flex-shrink: 0;
+}
+.sb-brand-icon {
+  width: 32px; height: 32px; background: var(--gold);
+  border-radius: 8px; display: flex; align-items: center;
+  justify-content: center; font-size: 1rem; flex-shrink: 0;
+  font-family: 'Playfair Display', serif; font-weight: 700; color: var(--bark);
+}
+.sb-brand-text {
+  font-family: 'Playfair Display', serif; font-size: 1rem;
+  color: var(--white); font-weight: 700; white-space: nowrap; overflow: hidden;
+}
+.sb-brand-text span { color: var(--gold); }
+
+.sb-nav { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 10px 0; scrollbar-width: none; }
+.sb-nav::-webkit-scrollbar { display: none; }
+
+.sb-section-label {
+  font-size: .65rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; color: rgba(255,255,255,.3);
+  padding: 14px 14px 4px; white-space: nowrap; overflow: hidden;
+}
+.sb-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 14px; cursor: pointer; border-radius: 0;
+  transition: var(--trans); color: rgba(255,255,255,.65);
+  border-left: 3px solid transparent; white-space: nowrap;
+}
+.sb-item:hover { background: rgba(255,255,255,.06); color: var(--white); }
+.sb-item.active {
+  background: rgba(230,168,50,.12); color: var(--gold);
+  border-left-color: var(--gold);
+}
+.sb-icon { font-size: 1.05rem; width: 22px; text-align: center; flex-shrink: 0; }
+.sb-label { font-size: .83rem; font-weight: 500; overflow: hidden; }
+.sb-badge {
+  margin-left: auto; background: var(--red); color: var(--white);
+  font-size: .65rem; font-weight: 700; padding: 1px 6px;
+  border-radius: 10px; flex-shrink: 0;
+}
+
+.sb-footer {
+  border-top: 1px solid rgba(255,255,255,.08);
+  padding: 10px 0; flex-shrink: 0;
+}
+.sb-user {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; cursor: pointer; transition: var(--trans);
+}
+.sb-user:hover { background: rgba(255,255,255,.06); }
+.sb-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .88rem; font-weight: 700; flex-shrink: 0; color: var(--white);
+}
+.sb-user-info { overflow: hidden; }
+.sb-user-name { font-size: .82rem; font-weight: 600; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-user-role { font-size: .7rem; color: rgba(255,255,255,.4); white-space: nowrap; }
+
+/* ── MAIN AREA ── */
+#main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* ── TOPBAR ── */
+#topbar {
+  height: var(--topbar-h); background: var(--white);
+  border-bottom: 1px solid var(--g200);
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 20px; flex-shrink: 0; z-index: 100;
+}
+.topbar-toggle {
+  background: none; border: none; font-size: 1.2rem;
+  cursor: pointer; color: var(--g700); padding: 4px 6px;
+  border-radius: 6px; transition: var(--trans);
+}
+.topbar-toggle:hover { background: var(--g100); }
+.topbar-title { font-size: .95rem; font-weight: 600; color: var(--g900); }
+.topbar-sub { font-size: .78rem; color: var(--g500); margin-top: 1px; }
+.topbar-spacer { flex: 1; }
+.topbar-search {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--g100); border-radius: 20px; padding: 6px 14px;
+  font-size: .82rem; color: var(--g700);
+}
+.topbar-search input {
+  background: none; border: none; outline: none;
+  font-size: .82rem; color: var(--g900); width: 160px;
+}
+.topbar-actions { display: flex; align-items: center; gap: 8px; }
+.topbar-btn {
+  background: none; border: none; width: 34px; height: 34px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 1rem; color: var(--g700); position: relative;
+  transition: var(--trans);
+}
+.topbar-btn:hover { background: var(--g100); }
+.topbar-notif-dot {
+  position: absolute; top: 6px; right: 6px;
+  width: 7px; height: 7px; background: var(--red); border-radius: 50%;
+}
+.topbar-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .82rem; font-weight: 700; cursor: pointer; color: var(--white);
+}
+
+/* ── CONTENT ── */
+#content { flex: 1; overflow-y: auto; }
+
+/* ═══════════════════ PANELS ═══════════════════ */
+.panel { display: none; padding: 24px; animation: fadeIn .2s ease; }
+.panel.active { display: block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+
+/* ── PAGE HEADER ── */
+.page-head { margin-bottom: 24px; }
+.page-head h1 { font-size: 1.4rem; font-weight: 700; color: var(--bark); }
+.page-head p { font-size: .85rem; color: var(--g500); margin-top: 3px; }
+.page-head-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+/* ── STAT CARDS ── */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 14px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--white); border-radius: var(--radius);
+  padding: 18px 16px; box-shadow: var(--shadow-sm);
+  border: 1px solid var(--g200); position: relative; overflow: hidden;
+}
+.stat-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.stat-card.gold::before   { background: var(--gold); }
+.stat-card.green::before  { background: var(--green); }
+.stat-card.sky::before    { background: var(--sky); }
+.stat-card.red::before    { background: var(--red); }
+.stat-card.purple::before { background: var(--purple); }
+.stat-card.copper::before { background: var(--copper); }
+.stat-icon { font-size: 1.5rem; margin-bottom: 10px; }
+.stat-value { font-size: 1.8rem; font-weight: 700; color: var(--bark); line-height: 1; }
+.stat-label { font-size: .75rem; color: var(--g500); margin-top: 4px; font-weight: 500; }
+.stat-delta { font-size: .72rem; margin-top: 6px; font-weight: 600; }
+.stat-delta.up { color: var(--green); }
+.stat-delta.down { color: var(--red); }
+
+/* ── CARDS ── */
+.card {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow-sm); border: 1px solid var(--g200);
+  margin-bottom: 16px; overflow: hidden;
+}
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; border-bottom: 1px solid var(--g200);
+}
+.card-title { font-size: .88rem; font-weight: 700; color: var(--bark); }
+.card-body { padding: 18px; }
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media(max-width:700px){ .card-grid { grid-template-columns: 1fr; } }
+
+/* ── TABLES ── */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+th { text-align: left; padding: 9px 12px; color: var(--g700); font-weight: 600; border-bottom: 2px solid var(--g200); white-space: nowrap; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--g100); color: var(--g900); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--g50); }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 20px; font-size: .7rem; font-weight: 700;
+}
+.badge.approved  { background: var(--green-light);  color: var(--green); }
+.badge.pending   { background: var(--gold-light);   color: #8a5a00; }
+.badge.rejected  { background: var(--red-light);    color: var(--red); }
+.badge.admin     { background: var(--purple-light);  color: var(--purple); }
+.badge.moderator { background: var(--sky-light);    color: var(--sky); }
+.badge.translator{ background: var(--green-light);  color: var(--green); }
+.badge.visitor   { background: var(--g100);         color: var(--g700); }
+
+/* ── ROLE COLOR DOTS ── */
+.role-dot { width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0; }
+.role-dot.admin     { background: var(--purple); }
+.role-dot.moderator { background: var(--sky); }
+.role-dot.translator{ background: var(--green); }
+.role-dot.visitor   { background: var(--g500); }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 7px; cursor: pointer;
+  font-size: .82rem; font-weight: 600; border: none;
+  font-family: inherit; transition: var(--trans);
+}
+.btn.primary   { background: var(--earth);  color: var(--white); }
+.btn.primary:hover { background: var(--bark); }
+.btn.secondary { background: var(--g100); color: var(--g900); border: 1px solid var(--g300); }
+.btn.secondary:hover { background: var(--g200); }
+.btn.success   { background: var(--green); color: var(--white); }
+.btn.success:hover { opacity: .88; }
+.btn.danger    { background: var(--red);   color: var(--white); }
+.btn.danger:hover  { opacity: .88; }
+.btn.gold      { background: var(--gold);  color: var(--bark); }
+.btn.gold:hover { background: #d49620; }
+.btn.sm { padding: 5px 11px; font-size: .75rem; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* ── FORMS ── */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: .78rem; font-weight: 600; color: var(--g900); margin-bottom: 5px; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 9px 12px; border: 1.5px solid var(--g300);
+  border-radius: 7px; font-size: .88rem; font-family: inherit;
+  outline: none; transition: border .2s; background: var(--white); color: var(--g900);
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--gold); }
+.form-textarea { resize: vertical; min-height: 80px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media(max-width:520px){ .form-row { grid-template-columns: 1fr; } }
+.form-hint { font-size: .72rem; color: var(--g500); margin-top: 4px; }
+
+/* ── TABS ── */
+.tabs { display: flex; gap: 0; border-bottom: 2px solid var(--g200); margin-bottom: 20px; overflow-x: auto; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  padding: 9px 18px; cursor: pointer; font-size: .82rem; font-weight: 600;
+  color: var(--g500); border: none; background: none; font-family: inherit;
+  border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap;
+  transition: var(--trans);
+}
+.tab:hover { color: var(--bark); }
+.tab.active { color: var(--earth); border-bottom-color: var(--earth); }
+
+/* ── ACTIVITY FEED ── */
+.activity-item {
+  display: flex; gap: 12px; padding: 12px 0;
+  border-bottom: 1px solid var(--g100);
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px;
+}
+.activity-dot.green  { background: var(--green); }
+.activity-dot.gold   { background: var(--gold); }
+.activity-dot.sky    { background: var(--sky); }
+.activity-dot.red    { background: var(--red); }
+.activity-text { font-size: .82rem; color: var(--g900); line-height: 1.4; }
+.activity-time { font-size: .72rem; color: var(--g500); margin-top: 2px; }
+
+/* ── TRANSLATION BOX ── */
+.trans-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: start; margin-bottom: 16px; }
+@media(max-width:600px){ .trans-row { grid-template-columns: 1fr; } }
+.trans-box { background: var(--white); border: 1.5px solid var(--g300); border-radius: var(--radius); overflow: hidden; }
+.trans-box-head { background: var(--g50); padding: 9px 14px; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--g500); border-bottom: 1px solid var(--g200); display: flex; align-items: center; justify-content: space-between; }
+.trans-box textarea { width: 100%; border: none; outline: none; resize: none; padding: 14px; font-size: .95rem; min-height: 140px; font-family: inherit; color: var(--g900); }
+.trans-box-output { padding: 14px; min-height: 140px; font-size: .98rem; color: var(--green); font-weight: 500; line-height: 1.6; }
+.trans-box-output.empty { color: var(--g500); font-style: italic; font-size: .85rem; font-weight: 400; }
+.trans-swap-btn {
+  width: 36px; height: 36px; border-radius: 50%; background: var(--gold);
+  border: none; cursor: pointer; font-size: 1.1rem; margin-top: 44px;
+  display: flex; align-items: center; justify-content: center; transition: var(--trans);
+  flex-shrink: 0;
+}
+.trans-swap-btn:hover { background: var(--copper); transform: rotate(180deg); }
+.source-badge {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; font-size: .72rem; font-weight: 600;
+  border-top: 1px solid var(--g200);
+}
+.source-badge.approved { background: var(--green-light); color: var(--green); }
+.source-badge.ai { background: var(--sky-light); color: var(--sky); }
+.source-badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+.source-badge.approved .source-badge-dot { background: var(--green); }
+.source-badge.ai .source-badge-dot { background: var(--sky); }
+
+/* ── SUGGEST CORRECTION MODAL ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.45); z-index: 500;
+  align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: var(--white); border-radius: 14px; box-shadow: var(--shadow-lg);
+  width: 100%; max-width: 480px; animation: modalIn .2s ease;
+}
+@keyframes modalIn { from{opacity:0;transform:scale(.96)} to{opacity:1;transform:none} }
+.modal-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--g200); }
+.modal-title { font-size: .95rem; font-weight: 700; }
+.modal-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--g500); padding: 2px 6px; border-radius: 4px; }
+.modal-close:hover { background: var(--g100); }
+.modal-body { padding: 20px; }
+.modal-foot { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 20px; border-top: 1px solid var(--g200); }
+
+/* ── DICT ENTRIES ── */
+.dict-entry {
+  background: var(--white); border-radius: var(--radius);
+  border: 1px solid var(--g200); border-left: 4px solid var(--gold);
+  padding: 16px; margin-bottom: 12px;
+}
+.dict-en { font-size: 1.1rem; font-family: 'Playfair Display', serif; font-weight: 700; color: var(--g900); }
+.dict-bm { font-size: 1.25rem; color: var(--earth); font-family: 'Playfair Display', serif; font-weight: 700; margin: 3px 0; }
+.dict-pron { font-size: .78rem; color: var(--sky); font-style: italic; }
+.dict-ex { font-size: .8rem; color: var(--g700); margin-top: 6px; padding-top: 8px; border-top: 1px solid var(--g200); }
+.dict-meta { display: flex; gap: 8px; margin: 6px 0; flex-wrap: wrap; }
+.dict-tag { background: var(--g100); color: var(--g700); font-size: .7rem; padding: 2px 8px; border-radius: 10px; }
+
+/* ── CAMERA / OCR ── */
+.drop-zone {
+  border: 2px dashed var(--copper); border-radius: var(--radius);
+  padding: 40px 20px; text-align: center; cursor: pointer; transition: var(--trans);
+  background: var(--white);
+}
+.drop-zone:hover, .drop-zone.over { border-color: var(--earth); background: #FDF6F0; }
+.drop-zone-icon { font-size: 2.4rem; margin-bottom: 10px; }
+.drop-zone h3 { font-size: .95rem; margin-bottom: 4px; }
+.drop-zone p { font-size: .78rem; color: var(--g500); }
+.step-track { display: flex; margin: 16px 0; border-radius: 6px; overflow: hidden; }
+.step-seg { flex: 1; padding: 7px 4px; text-align: center; font-size: .65rem; font-weight: 700; background: var(--g100); color: var(--g500); transition: var(--trans); }
+.step-seg.done   { background: var(--green); color: var(--white); }
+.step-seg.active { background: var(--earth); color: var(--white); }
+
+/* ── VOICE ── */
+.mic-wrap { text-align: center; padding: 32px 0 20px; }
+.mic-ring {
+  display: inline-block; position: relative;
+  width: 120px; height: 120px; margin-bottom: 16px;
+}
+.mic-ring::before,.mic-ring::after {
+  content:''; position:absolute; inset:0; border-radius:50%;
+  border: 2px solid var(--copper); opacity:0;
+}
+.mic-ring.on::before { animation: ripple 1.4s ease-out infinite; }
+.mic-ring.on::after  { animation: ripple 1.4s ease-out .5s infinite; }
+@keyframes ripple { 0%{transform:scale(1);opacity:.6} 100%{transform:scale(1.9);opacity:0} }
+.mic-btn {
+  width:120px;height:120px;border-radius:50%;
+  background: linear-gradient(145deg,var(--earth),var(--bark));
+  border:none;cursor:pointer;font-size:2.4rem;color:var(--white);
+  box-shadow:0 6px 24px rgba(124,58,18,.35);transition:var(--trans);
+  display:flex;align-items:center;justify-content:center;
+}
+.mic-btn:hover { transform:scale(1.04); }
+.mic-btn.on { background:linear-gradient(145deg,var(--red),#7B0000); animation:pulse 1s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+.mic-status { font-size:.82rem; color:var(--g500); }
+.mic-status.on  { color:var(--red); font-weight:600; }
+.mic-status.ok  { color:var(--green); font-weight:600; }
+
+/* ── PROFILE ── */
+.profile-hero {
+  background: linear-gradient(135deg, var(--bark), #5C2D0E);
+  border-radius: var(--radius); padding: 28px; color: var(--white);
+  display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-bottom: 16px;
+}
+.profile-avatar-lg {
+  width: 72px; height: 72px; border-radius: 50%; border: 3px solid var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; font-weight: 700; flex-shrink: 0;
+}
+.profile-name { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; }
+.profile-meta { font-size: .8rem; opacity: .7; margin-top: 3px; }
+.profile-points { margin-top: 10px; display: flex; gap: 20px; flex-wrap: wrap; }
+.profile-stat strong { display: block; font-size: 1.3rem; color: var(--gold); }
+.profile-stat span   { font-size: .72rem; opacity: .7; }
+
+/* ── LEADERBOARD ── */
+.lb-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--g100); }
+.lb-row:last-child { border-bottom: none; }
+.lb-rank { font-size: .85rem; font-weight: 700; width: 24px; text-align: center; color: var(--g500); flex-shrink: 0; }
+.lb-rank.gold   { color: #C8A000; }
+.lb-rank.silver { color: #888; }
+.lb-rank.bronze { color: #A0522D; }
+.lb-av { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .8rem; font-weight: 700; color: var(--white); flex-shrink: 0; }
+.lb-name  { font-size: .83rem; font-weight: 600; flex: 1; }
+.lb-pts   { font-size: .82rem; font-weight: 700; color: var(--earth); }
+
+/* ── LOGIN GATE ── */
+#loginGate {
+  display: none; position: fixed; inset: 0;
+  background: linear-gradient(135deg, var(--bark) 0%, #5C2D0E 60%, var(--earth) 100%);
+  z-index: 1000; align-items: center; justify-content: center; padding: 20px;
+}
+#loginGate.show { display: flex; }
+.login-card {
+  background: var(--white); border-radius: 16px; box-shadow: var(--shadow-lg);
+  width: 100%; max-width: 420px; overflow: hidden;
+}
+.login-head {
+  background: var(--bark); padding: 28px 28px 20px; text-align: center;
+}
+.login-logo { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--gold); font-weight: 700; margin-bottom: 4px; }
+.login-logo span { color: rgba(255,255,255,.7); font-weight: 300; }
+.login-tagline { font-size: .78rem; color: rgba(255,255,255,.5); }
+.login-body { padding: 28px; }
+.login-tabs { display: flex; margin-bottom: 24px; border-bottom: 2px solid var(--g200); }
+.login-tab {
+  flex: 1; padding: 9px; text-align: center; cursor: pointer; border: none;
+  background: none; font-size: .85rem; font-weight: 600; color: var(--g500);
+  border-bottom: 2px solid transparent; margin-bottom: -2px; transition: var(--trans);
+}
+.login-tab.active { color: var(--earth); border-bottom-color: var(--earth); }
+.login-form { display: none; }
+.login-form.active { display: block; }
+.login-role-select { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.role-chip {
+  flex: 1; min-width: 90px; padding: 8px 10px; border: 2px solid var(--g300);
+  border-radius: 8px; cursor: pointer; text-align: center; transition: var(--trans);
+  background: var(--white);
+}
+.role-chip.selected { border-color: var(--earth); background: #FDF6F0; }
+.role-chip-icon { font-size: 1.1rem; }
+.role-chip-label { font-size: .72rem; font-weight: 600; color: var(--g700); display: block; margin-top: 3px; }
+.guest-btn {
+  width: 100%; padding: 11px; background: var(--g100); border: 1px solid var(--g300);
+  border-radius: 7px; cursor: pointer; font-size: .85rem; font-weight: 600;
+  color: var(--g700); font-family: inherit; margin-top: 12px; transition: var(--trans);
+}
+.guest-btn:hover { background: var(--g200); }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--bark); color: var(--white); padding: 11px 22px;
+  border-radius: 8px; font-size: .84rem; z-index: 9999;
+  display: none; box-shadow: var(--shadow-lg); max-width: 90vw; text-align: center;
+}
+#toast.show { display: block; animation: toastIn .25s ease; }
+@keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(8px)} to{opacity:1;transform:translateX(-50%)} }
+
+/* ── SPINNER ── */
+.spin { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin .65s linear infinite; vertical-align: middle; }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* ── MOBILE ── */
+#sideOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 199; }
+@media(max-width:768px) {
+  #sidebar { position: fixed; top: 0; bottom: 0; left: 0; z-index: 200; transform: translateX(-100%); width: var(--sidebar-w) !important; transition: transform .25s ease; }
+  #sidebar.mob-open { transform: translateX(0); }
+  #sideOverlay.show { display: block; }
+  .topbar-search { display: none; }
+  .panel { padding: 16px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── CHART BARS ── */
+.chart-bar-wrap { display: flex; flex-direction: column; gap: 8px; }
+.chart-bar-row { display: flex; align-items: center; gap: 10px; }
+.chart-bar-label { font-size: .75rem; color: var(--g700); width: 110px; flex-shrink: 0; text-align: right; }
+.chart-bar-track { flex: 1; background: var(--g200); border-radius: 4px; height: 10px; overflow: hidden; }
+.chart-bar-fill { height: 100%; border-radius: 4px; transition: width .6s ease; }
+.chart-bar-val { font-size: .72rem; font-weight: 700; color: var(--g700); width: 36px; }
+
+/* ── SETTINGS ── */
+.setting-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0; border-bottom: 1px solid var(--g100);
+}
+.setting-row:last-child { border-bottom: none; }
+.setting-info strong { display: block; font-size: .85rem; }
+.setting-info span   { font-size: .75rem; color: var(--g500); }
+.toggle {
+  width: 40px; height: 22px; border-radius: 11px; background: var(--g300);
+  cursor: pointer; position: relative; transition: background .2s; flex-shrink: 0;
+  border: none;
+}
+.toggle.on { background: var(--green); }
+.toggle::after {
+  content:''; position:absolute; top:3px; left:3px;
+  width:16px; height:16px; border-radius:50%; background:#fff;
+  transition: left .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+.toggle.on::after { left:21px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ LOGIN GATE ═══════════ -->
+<div id="loginGate" class="show">
+  <div class="login-card">
+    <div class="login-head">
+      <div class="login-logo">BembaHub<span> Portal</span></div>
+      <div class="login-tagline">Preserving the Bemba language through technology</div>
+    </div>
+    <div class="login-body">
+      <div class="login-tabs">
+        <button class="login-tab active" onclick="switchLoginTab('signin',this)">Sign In</button>
+        <button class="login-tab" onclick="switchLoginTab('register',this)">Register</button>
+      </div>
+
+      <!-- SIGN IN -->
+      <div class="login-form active" id="lf-signin">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" id="li-email" type="email" placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="form-input" id="li-pass" type="password" placeholder="••••••••">
+        </div>
+        <button class="btn primary" style="width:100%;justify-content:center;padding:11px" onclick="doLogin()">Sign In</button>
+        <button class="guest-btn" onclick="guestLogin()">👁️ Continue as Guest (Visitor)</button>
+        <p style="font-size:.72rem;color:var(--g500);margin-top:12px;text-align:center">
+          Demo: admin@bembahub.com / admin123 &nbsp;|&nbsp; mod@bembahub.com / mod123 &nbsp;|&nbsp; trans@bembahub.com / trans123
+        </p>
+      </div>
+
+      <!-- REGISTER -->
+      <div class="login-form" id="lf-register">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input class="form-input" id="reg-name" type="text" placeholder="Joseph Bubenshi">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" id="reg-email" type="email" placeholder="your@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input class="form-input" id="reg-pass" type="password" placeholder="••••••••">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Register as</label>
+          <div class="login-role-select">
+            <div class="role-chip selected" data-role="visitor" onclick="selectRegRole(this)">
+              <div class="role-chip-icon">👁️</div><span class="role-chip-label">Visitor</span>
+            </div>
+            <div class="role-chip" data-role="translator" onclick="selectRegRole(this)">
+              <div class="role-chip-icon">✍️</div><span class="role-chip-label">Translator</span>
+            </div>
+          </div>
+        </div>
+        <button class="btn primary" style="width:100%;justify-content:center;padding:11px" onclick="doRegister()">Create Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ APP SHELL ═══════════ -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="sb-brand">
+      <div class="sb-brand-icon">B</div>
+      <div class="sb-brand-text">Bemba<span>Hub</span></div>
+    </div>
+    <div class="sb-nav" id="sbNav"><!-- built by JS --></div>
+    <div class="sb-footer">
+      <div class="sb-user" onclick="goPanel('profile')">
+        <div class="sb-avatar" id="sbAvatar">?</div>
+        <div class="sb-user-info">
+          <div class="sb-user-name" id="sbName">—</div>
+          <div class="sb-user-role" id="sbRole">—</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div id="main">
+    <!-- TOPBAR -->
+    <div id="topbar">
+      <button class="topbar-toggle" onclick="toggleSidebar()">☰</button>
+      <div>
+        <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <div class="topbar-search">
+        <span>🔍</span>
+        <input placeholder="Quick search…" onkeydown="if(event.key==='Enter')quickSearch(this.value)">
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" onclick="goPanel('community')" title="Notifications">
+          🔔<span class="topbar-notif-dot" id="notifDot"></span>
+        </button>
+        <div class="topbar-avatar" id="topbarAvatar" onclick="goPanel('profile')" style="background:var(--earth)">?</div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div id="content">
+
+      <!-- ── DASHBOARD ── -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="page-head-row">
+          <div class="page-head">
+            <h1 id="dashTitle">Welcome back</h1>
+            <p id="dashSub">Here's what's happening on BembaHub today.</p>
+          </div>
+          <button class="btn gold" onclick="goPanel('translate')">+ New Translation</button>
+        </div>
+        <div class="stats-grid" id="dashStats"><!-- built by JS --></div>
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-head"><span class="card-title">📊 Recent Activity</span></div>
+            <div class="card-body" id="dashActivity"><!-- built by JS --></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="card-title">🏆 Top Contributors</span></div>
+            <div class="card-body" id="dashLeaderboard"><!-- built by JS --></div>
+          </div>
+        </div>
+        <!-- Admin-only quick panels -->
+        <div id="adminQuickPanel" style="display:none">
+          <div class="card-grid">
+            <div class="card">
+              <div class="card-head"><span class="card-title">📈 Translations This Week</span></div>
+              <div class="card-body">
+                <div class="chart-bar-wrap">
+                  <div class="chart-bar-row"><div class="chart-bar-label">Mon</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:60%;background:var(--earth)"></div></div><div class="chart-bar-val">312</div></div>
+                  <div class="chart-bar-row"><div class="chart-bar-label">Tue</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:80%;background:var(--earth)"></div></div><div class="chart-bar-val">418</div></div>
+                  <div class="chart-bar-row"><div class="chart-bar-label">Wed</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:55%;background:var(--earth)"></div></div><div class="chart-bar-val">287</div></div>
+                  <div class="chart-bar-row"><div class="chart-bar-label">Thu</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:90%;background:var(--earth)"></div></div><div class="chart-bar-val">470</div></div>
+                  <div class="chart-bar-row"><div class="chart-bar-label">Fri</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:72%;background:var(--earth)"></div></div><div class="chart-bar-val">376</div></div>
+                  <div class="chart-bar-row"><div class="chart-bar-label">Sat</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:44%;background:var(--copper)"></div></div><div class="chart-bar-val">228</div></div>
+                  <div class="chart-bar-row"><div class="chart-bar-label">Sun</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:38%;background:var(--copper)"></div></div><div class="chart-bar-val">197</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">📂 Categories Used</span></div>
+              <div class="card-body">
+                <div class="chart-bar-wrap">
+                  <div class="chart-bar-row"><div class="chart-bar-label">Greetings</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:88%;background:var(--green)"></div></div><div class="chart-bar-val">88%</div></div>
+                  <div class="chart-bar-row"><div class="chart-bar-label">Church</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:74%;background:var(--green)"></div></div><div class="chart-bar-val">74%</div></div>
+                  <div class="chart-bar-row"><div class="chart-bar-label">Family</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:62%;background:var(--sky)"></div></div><div class="chart-bar-val">62%</div></div>
+                  <div class="chart-bar-row"><div class="chart-bar-label">Business</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:45%;background:var(--sky)"></div></div><div class="chart-bar-val">45%</div></div>
+                  <div class="chart-bar-row"><div class="chart-bar-label">Travel</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:38%;background:var(--copper)"></div></div><div class="chart-bar-val">38%</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TRANSLATE ── -->
+      <div class="panel" id="panel-translate">
+        <div class="page-head"><h1>🔤 Translate</h1><p>English ↔ Bemba — database-first, AI fallback</p></div>
+        <div class="card">
+          <div class="card-body">
+            <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:16px">
+              <div style="font-weight:700;font-size:.88rem;padding:7px 18px;background:var(--g100);border-radius:7px" id="fromLbl">🇬🇧 English</div>
+              <button class="trans-swap-btn" onclick="swapLang()" title="Swap">⇄</button>
+              <div style="font-weight:700;font-size:.88rem;padding:7px 18px;background:var(--g100);border-radius:7px" id="toLbl">🇿🇲 Bemba</div>
+            </div>
+            <div class="trans-row">
+              <div class="trans-box">
+                <div class="trans-box-head"><span id="inputLangHdr">English</span><span style="font-weight:400;font-size:.7rem;color:var(--g500)">Ctrl+Enter to translate</span></div>
+                <textarea id="transInput" placeholder="Type text here…"></textarea>
+              </div>
+              <div></div><!-- spacer for swap btn (handled by grid) -->
+              <div class="trans-box">
+                <div class="trans-box-head" id="outputLangHdr">Bemba</div>
+                <div class="trans-box-output empty" id="transOutput">Translation appears here…</div>
+                <div class="source-badge" id="transSourceBadge" style="display:none"></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button class="btn primary" onclick="runTranslation()">✨ Translate</button>
+              <button class="btn secondary" onclick="copyTrans()">📋 Copy</button>
+              <button class="btn secondary" onclick="saveTrans()">⭐ Save</button>
+              <button class="btn secondary" onclick="shareTrans()">🔗 Share</button>
+            </div>
+          </div>
+        </div>
+        <!-- Suggest correction (shown after translation) -->
+        <div class="card" id="suggestCard" style="display:none;border-left:4px solid var(--copper)">
+          <div class="card-head">
+            <span class="card-title">💡 Not accurate?</span>
+            <button class="btn sm secondary" onclick="openSuggestModal()">Suggest Correction</button>
+          </div>
+          <div class="card-body" style="font-size:.82rem;color:var(--g700)">
+            Current: <strong id="suggestCurrentVal" style="color:var(--green)">—</strong>
+          </div>
+        </div>
+        <!-- History -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">🕘 Translation History</span>
+            <button class="btn sm secondary" onclick="clearTransHistory()">Clear</button>
+          </div>
+          <div class="card-body" id="transHistory"><p style="color:var(--g500);font-size:.82rem">No translations yet.</p></div>
+        </div>
+      </div>
+
+      <!-- ── CAMERA ── -->
+      <div class="panel" id="panel-camera">
+        <div class="page-head"><h1>📷 Camera Translate</h1><p>Upload or capture an image — AI extracts &amp; translates text</p></div>
+        <div class="card">
+          <div class="card-body">
+            <div class="step-track">
+              <div class="step-seg active" id="cs1">1 Image</div>
+              <div class="step-seg" id="cs2">2 Detect</div>
+              <div class="step-seg" id="cs3">3 Extract</div>
+              <div class="step-seg" id="cs4">4 Translate</div>
+              <div class="step-seg" id="cs5">5 Done ✓</div>
+            </div>
+            <div class="drop-zone" id="camZone"
+              ondragover="czDragOver(event)" ondragleave="czDragLeave()" ondrop="czDrop(event)"
+              onclick="czClick(event)">
+              <div class="drop-zone-icon">📸</div>
+              <h3>Drag &amp; drop an image or tap to browse</h3>
+              <p>JPG · PNG · WEBP — books, posters, church docs, signs</p>
+            </div>
+            <!-- Inputs: position:fixed top:0 left:0 width:0 height:0 — Android safe -->
+            <input type="file" id="camFileIn" accept="image/*"
+              style="position:fixed;top:0;left:0;width:0;height:0;opacity:0;pointer-events:none"
+              onchange="camFileChosen(event)">
+            <input type="file" id="camCapIn" accept="image/*" capture="environment"
+              style="position:fixed;top:0;left:0;width:0;height:0;opacity:0;pointer-events:none"
+              onchange="camFileChosen(event)">
+            <!-- Live camera fallback -->
+            <div id="liveWrap" style="display:none;text-align:center;margin-top:12px">
+              <video id="liveVid" autoplay playsinline muted style="max-width:100%;border-radius:10px;max-height:260px;background:#000"></video>
+              <div style="display:flex;gap:10px;justify-content:center;margin-top:10px">
+                <button class="btn primary" onclick="snapCam()">📸 Snap</button>
+                <button class="btn secondary" onclick="closeLiveCam()">✕ Cancel</button>
+              </div>
+            </div>
+            <canvas id="snapCvs" style="display:none"></canvas>
+            <!-- Preview -->
+            <div id="camPreviewWrap" style="display:none;position:relative;margin-top:14px;text-align:center">
+              <img id="camPreview" style="max-width:100%;max-height:280px;border-radius:10px;object-fit:contain">
+              <button onclick="clearCam()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:.85rem">✕</button>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+              <button class="btn primary" onclick="openLiveCam()">📷 Take Photo</button>
+              <button class="btn secondary" onclick="document.getElementById('camFileIn').click()">🖼️ Upload</button>
+              <button class="btn gold" id="camExtractBtn" onclick="camExtract()" disabled>🔍 Extract Text</button>
+            </div>
+          </div>
+        </div>
+        <!-- Results -->
+        <div id="camResultsWrap" style="display:none">
+          <div class="card-grid">
+            <div class="card">
+              <div class="card-head">
+                <span class="card-title">📄 Detected Text</span>
+                <button class="btn sm secondary" onclick="toggleCamEdit()">✏️ Edit</button>
+              </div>
+              <div class="card-body">
+                <div id="camDetected" style="font-size:.9rem;line-height:1.6;min-height:80px;color:var(--g700)">Extracting…</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">🇿🇲 Bemba Translation</span></div>
+              <div class="card-body">
+                <div id="camTranslation" style="font-size:.95rem;line-height:1.6;min-height:80px;color:var(--green);font-weight:600">—</div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+            <button class="btn primary" id="camTransBtn" onclick="camDoTranslate()" disabled>✨ Translate to Bemba</button>
+            <button class="btn secondary" onclick="navigator.clipboard.writeText(document.getElementById('camTranslation').textContent).then(()=>toast('✅ Copied!'))">📋 Copy</button>
+            <button class="btn secondary" onclick="toast('⭐ Saved!')">⭐ Save</button>
+          </div>
+        </div>
+        <!-- Camera history -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">🕘 Image Translation History</span>
+            <button class="btn sm secondary" onclick="clearCamHistory()">Clear</button>
+          </div>
+          <div class="card-body" id="camHistory"><p style="color:var(--g500);font-size:.82rem">No image translations yet.</p></div>
+        </div>
+      </div>
+
+      <!-- ── VOICE ── -->
+      <div class="panel" id="panel-voice">
+        <div class="page-head"><h1>🎙️ Voice Translate</h1><p>Speak English — hear Bemba</p></div>
+        <div class="card">
+          <div class="card-body">
+            <div class="mic-wrap">
+              <div class="mic-ring" id="micRing">
+                <button class="mic-btn" id="micBtn" onclick="toggleMic()">🎙️</button>
+              </div>
+              <div class="mic-status" id="micStatus">Tap the mic and speak in English</div>
+            </div>
+            <div class="card-grid" style="margin-top:0">
+              <div>
+                <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g500);margin-bottom:8px">🇬🇧 You Said</div>
+                <div id="voiceSpoken" style="font-size:.95rem;color:var(--g900);min-height:60px;padding:12px;background:var(--g50);border-radius:8px;color:var(--g500);font-style:italic">Speak to see your words here…</div>
+              </div>
+              <div>
+                <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g500);margin-bottom:8px">🇿🇲 Bemba</div>
+                <div id="voiceBemba" style="font-size:1rem;color:var(--green);font-weight:600;min-height:60px;padding:12px;background:var(--green-light);border-radius:8px">Translation appears here…</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+              <button class="btn primary" onclick="toggleMic()">🎙️ Speak Again</button>
+              <button class="btn success" onclick="listenVoice()">🔊 Listen to Bemba</button>
+              <button class="btn secondary" onclick="copyVoice()">📋 Copy</button>
+            </div>
+          </div>
+        </div>
+        <!-- Learning mode -->
+        <div class="card">
+          <div class="card-head"><span class="card-title">🎓 Pronunciation Practice</span></div>
+          <div class="card-body" style="padding-bottom:0">
+            <div class="tabs" id="voiceCatTabs"></div>
+            <div id="voicePhrases"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── DICTIONARY ── -->
+      <div class="panel" id="panel-dictionary">
+        <div class="page-head"><h1>📖 Dictionary</h1><p>Browse and search Bemba words</p></div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-body" style="padding:14px">
+            <div style="display:flex;gap:10px">
+              <input class="form-input" id="dictQ" placeholder="Search English or Bemba…" onkeydown="if(event.key==='Enter')searchDict()" style="flex:1">
+              <button class="btn primary" onclick="searchDict()">Search</button>
+              <button class="btn secondary" onclick="document.getElementById('dictQ').value='';renderDict(dictData)">All</button>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px" id="catFilters"></div>
+          </div>
+        </div>
+        <div id="dictResults"></div>
+      </div>
+
+      <!-- ── COMMUNITY ── -->
+      <div class="panel" id="panel-community">
+        <div class="page-head"><h1>🤝 Community</h1><p>Contribute, review, and improve BembaHub translations</p></div>
+        <div class="tabs">
+          <button class="tab active" onclick="commTab('submit',this)">Submit Word</button>
+          <button class="tab" onclick="commTab('pending',this)" id="pendingTabBtn">Pending Review <span id="pendingCount" class="sb-badge" style="margin-left:4px;position:relative;top:0;right:0">0</span></button>
+          <button class="tab" onclick="commTab('history',this)">My Contributions</button>
+          <button class="tab" onclick="commTab('leaderboard',this)">🏆 Leaderboard</button>
+        </div>
+
+        <!-- Submit -->
+        <div id="comm-submit" class="comm-panel active" style="">
+          <div class="card">
+            <div class="card-head"><span class="card-title">➕ Add New Word</span></div>
+            <div class="card-body">
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">English Word / Phrase</label><input class="form-input" id="c-en" placeholder="e.g. Good morning"></div>
+                <div class="form-group"><label class="form-label">Bemba Translation</label><input class="form-input" id="c-bm" placeholder="e.g. Mwashibukeni"></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">Category</label>
+                  <select class="form-select" id="c-cat">
+                    <option>Greetings</option><option>Family</option><option>Church</option>
+                    <option>Business</option><option>School</option><option>Travel</option>
+                    <option>Health</option><option>Daily Conversation</option><option>General</option>
+                  </select>
+                </div>
+                <div class="form-group"><label class="form-label">Pronunciation (optional)</label><input class="form-input" id="c-pron" placeholder="e.g. mwa-shi-bu-KE-ni"></div>
+              </div>
+              <div class="form-group"><label class="form-label">Example Sentence (optional)</label><input class="form-input" id="c-ex" placeholder="e.g. Mwashibukeni, muli shani?"></div>
+              <button class="btn primary" onclick="submitWord()">Submit for Review</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pending -->
+        <div id="comm-pending" class="comm-panel" style="display:none">
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">⏳ Pending Review</span>
+              <span class="badge pending" id="pendingBadge">0 pending</span>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>English</th><th>Bemba</th><th>Category</th><th>By</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="pendingTbl"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- History -->
+        <div id="comm-history" class="comm-panel" style="display:none">
+          <div class="card">
+            <div class="card-head"><span class="card-title">📋 My Contributions</span></div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>English</th><th>Bemba</th><th>Category</th><th>Status</th><th>Points</th></tr></thead>
+                <tbody id="historyTbl"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div id="comm-leaderboard" class="comm-panel" style="display:none">
+          <div class="card">
+            <div class="card-head"><span class="card-title">🏆 Top Contributors</span></div>
+            <div class="card-body" id="lbBody"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ANALYTICS (admin/mod) ── -->
+      <div class="panel" id="panel-analytics">
+        <div class="page-head"><h1>📈 Analytics</h1><p>Platform usage and translation statistics</p></div>
+        <div class="stats-grid">
+          <div class="stat-card gold"><div class="stat-icon">🔤</div><div class="stat-value">12,847</div><div class="stat-label">Total Translations</div><div class="stat-delta up">↑ 8% this week</div></div>
+          <div class="stat-card green"><div class="stat-icon">✅</div><div class="stat-value">1,392</div><div class="stat-label">Approved Words</div><div class="stat-delta up">↑ 23 this week</div></div>
+          <div class="stat-card sky"><div class="stat-icon">👥</div><div class="stat-value">847</div><div class="stat-label">Active Users</div><div class="stat-delta up">↑ 14% this month</div></div>
+          <div class="stat-card red"><div class="stat-icon">⏳</div><div class="stat-value" id="analytPending">0</div><div class="stat-label">Pending Review</div></div>
+          <div class="stat-card purple"><div class="stat-icon">📷</div><div class="stat-value">3,241</div><div class="stat-label">Image Translations</div><div class="stat-delta up">↑ 5%</div></div>
+          <div class="stat-card copper"><div class="stat-icon">🎙️</div><div class="stat-value">5,619</div><div class="stat-label">Voice Translations</div><div class="stat-delta up">↑ 12%</div></div>
+        </div>
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-head"><span class="card-title">🔍 Most Searched Words</span></div>
+            <div class="card-body">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar-row"><div class="chart-bar-label">Good morning</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:92%;background:var(--earth)"></div></div><div class="chart-bar-val">1,847</div></div>
+                <div class="chart-bar-row"><div class="chart-bar-label">Thank you</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:78%;background:var(--earth)"></div></div><div class="chart-bar-val">1,562</div></div>
+                <div class="chart-bar-row"><div class="chart-bar-label">I love you</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:65%;background:var(--copper)"></div></div><div class="chart-bar-val">1,301</div></div>
+                <div class="chart-bar-row"><div class="chart-bar-label">How are you</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:55%;background:var(--copper)"></div></div><div class="chart-bar-val">1,104</div></div>
+                <div class="chart-bar-row"><div class="chart-bar-label">Welcome</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:42%;background:var(--gold)"></div></div><div class="chart-bar-val">842</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="card-title">📅 Daily Active Users (7-day)</span></div>
+            <div class="card-body">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar-row"><div class="chart-bar-label">Mon</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:68%;background:var(--sky)"></div></div><div class="chart-bar-val">142</div></div>
+                <div class="chart-bar-row"><div class="chart-bar-label">Tue</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:82%;background:var(--sky)"></div></div><div class="chart-bar-val">174</div></div>
+                <div class="chart-bar-row"><div class="chart-bar-label">Wed</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:76%;background:var(--sky)"></div></div><div class="chart-bar-val">160</div></div>
+                <div class="chart-bar-row"><div class="chart-bar-label">Thu</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:91%;background:var(--sky)"></div></div><div class="chart-bar-val">192</div></div>
+                <div class="chart-bar-row"><div class="chart-bar-label">Fri</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:88%;background:var(--sky)"></div></div><div class="chart-bar-val">186</div></div>
+                <div class="chart-bar-row"><div class="chart-bar-label">Sat</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:58%;background:var(--sky-light);"></div></div><div class="chart-bar-val" style="color:var(--g500)">122</div></div>
+                <div class="chart-bar-row"><div class="chart-bar-label">Sun</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:49%;background:var(--sky-light)"></div></div><div class="chart-bar-val" style="color:var(--g500)">103</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── USERS (admin) ── -->
+      <div class="panel" id="panel-users">
+        <div class="page-head"><h1>👥 User Management</h1><p>View, suspend, and manage user accounts</p></div>
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">All Users</span>
+            <span style="font-size:.78rem;color:var(--g500)" id="userCount"></span>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Points</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="usersTbl"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PROFILE ── -->
+      <div class="panel" id="panel-profile">
+        <div class="page-head"><h1>👤 My Profile</h1></div>
+        <div class="profile-hero">
+          <div class="profile-avatar-lg" id="profileAv">?</div>
+          <div>
+            <div class="profile-name" id="profileName">—</div>
+            <div class="profile-meta" id="profileMeta">—</div>
+            <div class="profile-points">
+              <div class="profile-stat"><strong id="profilePts">0</strong><span>Points</span></div>
+              <div class="profile-stat"><strong id="profileContribs">0</strong><span>Contributions</span></div>
+              <div class="profile-stat"><strong id="profileSaved">0</strong><span>Saved</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-head"><span class="card-title">Edit Profile</span></div>
+            <div class="card-body">
+              <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="editName"></div>
+              <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="editEmail" type="email"></div>
+              <button class="btn primary" onclick="saveProfile()">Save Changes</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="card-title">Change Password</span></div>
+            <div class="card-body">
+              <div class="form-group"><label class="form-label">Current Password</label><input class="form-input" type="password" placeholder="••••••••"></div>
+              <div class="form-group"><label class="form-label">New Password</label><input class="form-input" type="password" placeholder="••••••••"></div>
+              <button class="btn secondary" onclick="toast('✅ Password updated.')">Update Password</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">🚪 Sign Out</span></div>
+          <div class="card-body">
+            <button class="btn danger" onclick="doLogout()">Sign Out of BembaHub Portal</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SETTINGS ── -->
+      <div class="panel" id="panel-settings">
+        <div class="page-head"><h1>⚙️ Settings</h1></div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">Preferences</span></div>
+          <div class="card-body">
+            <div class="setting-row"><div class="setting-info"><strong>Dark Mode</strong><span>Switch to dark theme</span></div><button class="toggle" id="tog-dark" onclick="this.classList.toggle('on');toast('Theme updated.')"></button></div>
+            <div class="setting-row"><div class="setting-info"><strong>Auto-listen Translation</strong><span>Play Bemba audio after translating</span></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+            <div class="setting-row"><div class="setting-info"><strong>Translation History</strong><span>Save history in this session</span></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+            <div class="setting-row"><div class="setting-info"><strong>Community Notifications</strong><span>Get notified when contributions are reviewed</span></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">About BembaHub</span></div>
+          <div class="card-body">
+            <p style="font-size:.85rem;line-height:1.7;color:var(--g700)">BembaHub is a language technology platform dedicated to preserving, promoting, and making the Bemba language more accessible. Founded by <strong>Joseph Bubenshi</strong>.</p>
+            <p style="font-size:.78rem;color:var(--g500);margin-top:10px">Contact: <a href="mailto:josephbubenshi8@gmail.com" style="color:var(--earth)">josephbubenshi8@gmail.com</a> · 0571419895 · Mon–Fri 08:00–17:00</p>
+            <p style="font-size:.72rem;color:var(--g500);margin-top:8px">Portal v5.0 · © 2025 BembaHub</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- Mobile sidebar overlay -->
+<div id="sideOverlay" onclick="closeSidebar()"></div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Suggest Correction Modal -->
+<div class="modal-overlay" id="suggestModal">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">💡 Suggest a Correction</span>
+      <button class="modal-close" onclick="closeModal('suggestModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Your suggested Bemba translation</label><input class="form-input" id="suggestInput" placeholder="Enter better translation…"></div>
+      <div class="form-group"><label class="form-label">Reason (optional)</label><input class="form-input" id="suggestReason" placeholder="e.g. More accurate regional usage"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('suggestModal')">Cancel</button>
+      <button class="btn primary" onclick="submitSuggestion()">Submit Correction</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ══════════════════════════════════════════
+   DATA STORE
+══════════════════════════════════════════ */
+const USERS = [
+  { id:1, name:'Joseph Bubenshi', email:'admin@bembahub.com',  pass:'admin123',  role:'admin',      pts:350, status:'active', initials:'JB', color:'#4A1299' },
+  { id:2, name:'Mary Mutale',      email:'mod@bembahub.com',    pass:'mod123',    role:'moderator',  pts:180, status:'active', initials:'MM', color:'#1251A3' },
+  { id:3, name:'Peter Chanda',     email:'trans@bembahub.com',  pass:'trans123',  role:'translator', pts:120, status:'active', initials:'PC', color:'#1E5C20' },
+  { id:4, name:'Gift Mwansa',      email:'gift@bembahub.com',   pass:'gift123',   role:'translator', pts: 95, status:'active', initials:'GM', color:'#7C3A12' },
+  { id:5, name:'Grace Tembo',      email:'grace@bembahub.com',  pass:'grace123',  role:'visitor',    pts: 12, status:'active', initials:'GT', color:'#616161' },
+  { id:6, name:'Guest',            email:'guest@bembahub.com',  pass:'',          role:'visitor',    pts:  0, status:'active', initials:'G',  color:'#9E9E9E' },
+];
+
+const DICT = [
+  {id:1,en:'Good morning',bm:'Mwashibukeni',cat:'Greetings',pron:'mwa-shi-bu-KE-ni',ex:'Mwashibukeni, muli shani?',contrib:'System',status:'approved'},
+  {id:2,en:'Good evening',bm:'Mwabombeni',cat:'Greetings',pron:'mwa-BOM-be-ni',ex:'Mwabombeni, nakutemenwa.',contrib:'System',status:'approved'},
+  {id:3,en:'How are you',bm:'Muli shani',cat:'Greetings',pron:'moo-li SHA-ni',ex:'Muli shani? Nalikwata bwino.',contrib:'System',status:'approved'},
+  {id:4,en:'Thank you',bm:'Natotela',cat:'Common Phrases',pron:'na-TO-te-la',ex:'Natotela sana!',contrib:'Admin',status:'approved'},
+  {id:5,en:'I love you',bm:'Nakutemenwa',cat:'Common Phrases',pron:'na-ku-TE-me-nwa',ex:'Nakutemenwa, umukwai.',contrib:'Admin',status:'approved'},
+  {id:6,en:'Welcome',bm:'Mwapokelelwa',cat:'Greetings',pron:'mwa-po-ke-LEL-wa',ex:'Mwapokelelwa ku Zambia!',contrib:'Joseph B',status:'approved'},
+  {id:7,en:'Water',bm:'Amenshi',cat:'Daily',pron:'a-MEN-shi',ex:'Ndefwaya amenshi.',contrib:'System',status:'approved'},
+  {id:8,en:'Food',bm:'Ifilyo',cat:'Daily',pron:'i-FI-lyo',ex:'Ifilyo fyali ifyabufi!',contrib:'System',status:'approved'},
+  {id:9,en:'God',bm:'Lesa',cat:'Church',pron:'LE-sa',ex:'Lesa alelefya.',contrib:'Admin',status:'approved'},
+  {id:10,en:'Father',bm:'Tata',cat:'Family',pron:'TA-ta',ex:'Tata wandi alikwata imyaka makumi yabili.',contrib:'System',status:'approved'},
+  {id:11,en:'Mother',bm:'Mayo',cat:'Family',pron:'MA-yo',ex:'Mayo wandi alimba ubwali.',contrib:'System',status:'approved'},
+  {id:12,en:'School',bm:'Sukuulu',cat:'School',pron:'su-KOO-lu',ex:'Naya ku sukuulu.',contrib:'System',status:'approved'},
+  {id:13,en:'Money',bm:'Impiya',cat:'Business',pron:'IM-pi-ya',ex:'Nalikwata impiya yambula.',contrib:'Admin',status:'approved'},
+  {id:14,en:'Road',bm:'Inzila',cat:'Travel',pron:'IN-zi-la',ex:'Inzila ya ku Lusaka.',contrib:'System',status:'approved'},
+  {id:15,en:'Doctor',bm:'Ndoshi',cat:'Health',pron:'NDO-shi',ex:'Naya ku Ndoshi.',contrib:'System',status:'approved'},
+];
+
+const LESSONS = {
+  'Greetings':   [{en:'Good morning',bm:'Mwashibukeni',pron:'mwa-shi-bu-KE-ni'},{en:'Good evening',bm:'Mwabombeni',pron:'mwa-BOM-be-ni'},{en:'How are you?',bm:'Muli shani?',pron:'moo-li SHA-ni'},{en:'I am fine',bm:'Nalikwata bwino',pron:'na-li-KWA-ta BWI-no'},{en:'Welcome',bm:'Mwapokelelwa',pron:'mwa-po-ke-LEL-wa'}],
+  'Family':      [{en:'Father',bm:'Tata',pron:'TA-ta'},{en:'Mother',bm:'Mayo',pron:'MA-yo'},{en:'Brother',bm:'Mwine',pron:'MWI-ne'},{en:'Sister',bm:'Mulumendo',pron:'mu-lu-MEN-do'},{en:'Child',bm:'Umwana',pron:'um-WA-na'}],
+  'Church':      [{en:'God',bm:'Lesa',pron:'LE-sa'},{en:'Prayer',bm:'Umupashanya',pron:'u-mu-pa-SHA-nya'},{en:'Praise',bm:'Ukusamba',pron:'u-ku-SAM-ba'},{en:'Amen',bm:'Ameni',pron:'a-ME-ni'}],
+  'Daily':       [{en:'Thank you',bm:'Natotela',pron:'na-TO-te-la'},{en:'I love you',bm:'Nakutemenwa',pron:'na-ku-TE-me-nwa'},{en:'Water',bm:'Amenshi',pron:'a-MEN-shi'},{en:'Food',bm:'Ifilyo',pron:'i-FI-lyo'}],
+};
+
+let db = { words: [...DICT], pending: [], users: [...USERS], actLog: [], suggestions: [] };
+let session = { user: null, transLang:'en-bm', savedCount:0, contribs:0, pts:0, transHistory:[], camHistory:[] };
+let dictData = [...DICT];
+let selectedRegRole = 'visitor';
+let camB64 = null, camMime = 'image/jpeg', liveStream = null;
+let voiceListening = false, voiceRec = null;
+
+/* ══════════════════════════════════════════
+   NAV
+══════════════════════════════════════════ */
+const ROLE_NAVS = {
+  visitor:    ['dashboard','translate','camera','voice','dictionary','community','profile','settings'],
+  translator: ['dashboard','translate','camera','voice','dictionary','community','profile','settings'],
+  moderator:  ['dashboard','translate','camera','voice','dictionary','community','analytics','profile','settings'],
+  admin:      ['dashboard','translate','camera','voice','dictionary','community','analytics','users','profile','settings'],
+};
+const NAV_META = {
+  dashboard:  {label:'Dashboard',   icon:'📊'},
+  translate:  {label:'Translate',   icon:'🔤'},
+  camera:     {label:'Camera',      icon:'📷'},
+  voice:      {label:'Voice',       icon:'🎙️'},
+  dictionary: {label:'Dictionary',  icon:'📖'},
+  community:  {label:'Community',   icon:'🤝', badge:'pending'},
+  analytics:  {label:'Analytics',   icon:'📈'},
+  users:      {label:'Users',       icon:'👥'},
+  profile:    {label:'Profile',     icon:'👤'},
+  settings:   {label:'Settings',    icon:'⚙️'},
+};
+
+function buildNav() {
+  const role = session.user.role;
+  const items = ROLE_NAVS[role] || ROLE_NAVS.visitor;
+  const pendingN = db.pending.filter(p=>p.status==='pending').length;
+  document.getElementById('sbNav').innerHTML = items.map(id => {
+    const m = NAV_META[id];
+    const hasBadge = m.badge && pendingN > 0 && (role === 'admin' || role === 'moderator');
+    return `<div class="sb-item" id="nav-${id}" onclick="goPanel('${id}')">
+      <span class="sb-icon">${m.icon}</span>
+      <span class="sb-label">${m.label}</span>
+      ${hasBadge ? `<span class="sb-badge">${pendingN}</span>` : ''}
+    </div>`;
+  }).join('');
+  // Role section label
+  document.getElementById('sbNav').insertAdjacentHTML('afterbegin',
+    `<div class="sb-section-label">${role.toUpperCase()} PORTAL</div>`);
+}
+
+function goPanel(id, skipNav) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const panel = document.getElementById('panel-'+id);
+  if (!panel) return;
+  panel.classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+  const navEl = document.getElementById('nav-'+id);
+  if (navEl) navEl.classList.add('active');
+  document.getElementById('topbarTitle').textContent = NAV_META[id]?.label || id;
+  closeSidebar();
+  // Lazy init
+  if (id==='dictionary') { if (!dictData._init) { renderDict(dictData); buildCatFilters(); dictData._init=true; } }
+  if (id==='community')  { buildPending(); buildHistory(); buildLeaderboard(); }
+  if (id==='users')      { buildUsersTable(); }
+  if (id==='voice')      { buildVoiceCats(); }
+  if (id==='analytics')  { document.getElementById('analytPending').textContent = db.pending.filter(p=>p.status==='pending').length; }
+  if (id==='dashboard')  { buildDashboard(); }
+}
+
+/* ══════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════ */
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sideOverlay');
+  if (window.innerWidth <= 768) {
+    sb.classList.toggle('mob-open');
+    ov.classList.toggle('show');
+  } else {
+    sb.classList.toggle('collapsed');
+  }
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('mob-open');
+  document.getElementById('sideOverlay').classList.remove('show');
+}
+
+/* ══════════════════════════════════════════
+   LOGIN
+══════════════════════════════════════════ */
+function switchLoginTab(tab, btn) {
+  document.querySelectorAll('.login-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.login-form').forEach(f=>f.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('lf-'+tab).classList.add('active');
+}
+function selectRegRole(el) {
+  document.querySelectorAll('.role-chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedRegRole = el.dataset.role;
+}
+function doLogin() {
+  const email = document.getElementById('li-email').value.trim();
+  const pass  = document.getElementById('li-pass').value;
+  const user  = USERS.find(u=>u.email===email && u.pass===pass);
+  if (!user) { toast('❌ Invalid email or password.'); return; }
+  if (user.status==='suspended') { toast('🚫 Account suspended. Contact admin.'); return; }
+  enterPortal(user);
+}
+function doRegister() {
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass  = document.getElementById('reg-pass').value;
+  if (!name||!email||!pass) { toast('Please fill in all fields.'); return; }
+  if (db.users.find(u=>u.email===email)) { toast('Email already registered. Please sign in.'); return; }
+  const initials = name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+  const colors = ['#7C3A12','#1251A3','#1E5C20','#4A1299','#C8793A'];
+  const newUser = { id: db.users.length+1, name, email, pass, role: selectedRegRole, pts:0, status:'active', initials, color: colors[db.users.length%colors.length] };
+  db.users.push(newUser); USERS.push(newUser);
+  enterPortal(newUser);
+}
+function guestLogin() {
+  enterPortal(USERS.find(u=>u.role==='visitor' && u.name==='Guest'));
+}
+function enterPortal(user) {
+  session.user = user;
+  session.pts  = user.pts;
+  document.getElementById('loginGate').classList.remove('show');
+  // Topbar & sidebar user info
+  document.getElementById('sbAvatar').textContent   = user.initials;
+  document.getElementById('sbAvatar').style.background = user.color;
+  document.getElementById('sbName').textContent     = user.name;
+  document.getElementById('sbRole').textContent     = user.role.charAt(0).toUpperCase()+user.role.slice(1);
+  document.getElementById('topbarAvatar').textContent = user.initials;
+  document.getElementById('topbarAvatar').style.background = user.color;
+  // Profile panel
+  document.getElementById('profileAv').textContent = user.initials;
+  document.getElementById('profileAv').style.background = user.color;
+  document.getElementById('profileName').textContent = user.name;
+  document.getElementById('profileMeta').textContent = `${user.role.charAt(0).toUpperCase()+user.role.slice(1)} · ${user.email}`;
+  document.getElementById('editName').value  = user.name;
+  document.getElementById('editEmail').value = user.email;
+  buildNav();
+  buildDashboard();
+  goPanel('dashboard');
+  logActivity(`${user.name} signed in`, 'green');
+}
+function doLogout() {
+  session.user = null;
+  document.getElementById('loginGate').classList.add('show');
+  document.getElementById('sbNav').innerHTML = '';
+  toast('Signed out.');
+}
+
+/* ══════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════ */
+const ROLE_COLORS = {admin:'#4A1299',moderator:'#1251A3',translator:'#1E5C20',visitor:'#9E9E9E'};
+function buildDashboard() {
+  const u = session.user; if (!u) return;
+  document.getElementById('dashTitle').textContent = `Welcome back, ${u.name.split(' ')[0]}!`;
+  document.getElementById('dashSub').textContent = `You have ${u.pts} points · ${u.role} access`;
+  document.getElementById('adminQuickPanel').style.display = (u.role==='admin'||u.role==='moderator') ? 'block':'none';
+
+  const pending = db.pending.filter(p=>p.status==='pending').length;
+  const statSets = {
+    admin: [
+      {icon:'🔤',val:'12,847',label:'Total Translations',cls:'gold',delta:'↑ 8% this week',up:true},
+      {icon:'✅',val: db.words.length,label:'Approved Words',cls:'green',delta:'↑ 23 this week',up:true},
+      {icon:'👥',val: db.users.length,label:'Registered Users',cls:'sky',delta:'↑ 14%',up:true},
+      {icon:'⏳',val: pending,label:'Pending Review',cls:'red'},
+      {icon:'🏆',val: u.pts,label:'Your Points',cls:'purple'},
+      {icon:'📷',val:'3,241',label:'Image Translations',cls:'copper'},
+    ],
+    moderator: [
+      {icon:'⏳',val: pending,label:'Pending Review',cls:'red'},
+      {icon:'✅',val: db.pending.filter(p=>p.status==='approved').length,label:'Approved',cls:'green'},
+      {icon:'🔤',val:'12,847',label:'Total Translations',cls:'gold'},
+      {icon:'🏆',val: u.pts,label:'Your Points',cls:'purple'},
+    ],
+    translator: [
+      {icon:'✍️',val: db.pending.filter(p=>p.by===u.name).length,label:'My Submissions',cls:'gold'},
+      {icon:'✅',val: db.pending.filter(p=>p.by===u.name&&p.status==='approved').length,label:'Approved',cls:'green'},
+      {icon:'🏆',val: u.pts,label:'Your Points',cls:'purple'},
+      {icon:'🔤',val:'12,847',label:'Total Translations',cls:'sky'},
+    ],
+    visitor: [
+      {icon:'🔤',val:'12,847',label:'Translations Available',cls:'gold'},
+      {icon:'📖',val: db.words.length,label:'Dictionary Words',cls:'green'},
+      {icon:'🌍',val:'8 Categories',label:'Learning Topics',cls:'sky'},
+      {icon:'🤝',val: db.users.length,label:'Community Members',cls:'copper'},
+    ],
+  };
+  const stats = statSets[u.role] || statSets.visitor;
+  document.getElementById('dashStats').innerHTML = stats.map(s=>`
+    <div class="stat-card ${s.cls}">
+      <div class="stat-icon">${s.icon}</div>
+      <div class="stat-value">${s.val}</div>
+      <div class="stat-label">${s.label}</div>
+      ${s.delta?`<div class="stat-delta ${s.up?'up':'down'}">${s.delta}</div>`:''}
+    </div>`).join('');
+
+  // Activity feed
+  const acts = [...db.actLog].reverse().slice(0,6);
+  document.getElementById('dashActivity').innerHTML = acts.length ? acts.map(a=>`
+    <div class="activity-item">
+      <div class="activity-dot ${a.color||'green'}"></div>
+      <div><div class="activity-text">${a.text}</div><div class="activity-time">${a.time}</div></div>
+    </div>`).join('') : '<p style="color:var(--g500);font-size:.82rem">No activity yet.</p>';
+
+  // Leaderboard
+  const sorted = [...db.users].sort((a,b)=>b.pts-a.pts).slice(0,5);
+  const medals = ['gold','silver','bronze','',''];
+  document.getElementById('dashLeaderboard').innerHTML = sorted.map((u,i)=>`
+    <div class="lb-row">
+      <div class="lb-rank ${medals[i]}">${i<3?['🥇','🥈','🥉'][i]:i+1}</div>
+      <div class="lb-av" style="background:${u.color}">${u.initials}</div>
+      <div class="lb-name">${u.name} <span class="badge ${u.role}" style="margin-left:4px">${u.role}</span></div>
+      <div class="lb-pts">${u.pts} pts</div>
+    </div>`).join('');
+}
+
+function logActivity(text, color='green') {
+  const now = new Date();
+  db.actLog.push({ text, color, time: now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) });
+  if (db.actLog.length > 50) db.actLog.shift();
+}
+
+/* ══════════════════════════════════════════
+   TRANSLATOR — DB-FIRST PRIORITY
+══════════════════════════════════════════ */
+function lookupDB(input) {
+  const q = input.toLowerCase().trim();
+  const enToBm = session.transLang === 'en-bm';
+  // Approved community words first, then DICT
+  const pool = [...db.pending.filter(p=>p.status==='approved'), ...db.words];
+  for (const d of pool) {
+    const key = enToBm ? (d.en||'') : (d.bm||'');
+    if (key.toLowerCase().trim() === q) {
+      return { translation: enToBm ? (d.bm||d.suggested) : (d.en||d.original), source:'approved',
+               label:`✅ Approved — verified by BembaHub${d.by?' · by '+d.by:''}` };
+    }
+  }
+  // Partial
+  for (const d of db.words) {
+    const key = enToBm ? d.en : d.bm;
+    if (key.toLowerCase().includes(q) && q.length >= 4) {
+      return { translation: enToBm ? d.bm : d.en, source:'approved', label:'✅ Approved (close match) — BembaHub' };
+    }
+  }
+  return null;
+}
+
+function showSourceBadge(result) {
+  const el = document.getElementById('transSourceBadge');
+  el.style.display = 'flex';
+  el.className = 'source-badge ' + result.source;
+  el.innerHTML = `<span class="source-badge-dot"></span>${result.label}`;
+}
+function hideSourceBadge() {
+  const el = document.getElementById('transSourceBadge');
+  el.style.display = 'none';
+}
+
+async function runTranslation() {
+  const input = document.getElementById('transInput').value.trim();
+  if (!input) { toast('Enter text to translate.'); return; }
+  const out = document.getElementById('transOutput');
+  out.className = 'trans-box-output';
+  hideSourceBadge();
+
+  // DB lookup first
+  const hit = lookupDB(input);
+  if (hit) {
+    out.textContent = hit.translation;
+    showSourceBadge(hit);
+    afterTranslation(input, hit.translation, hit.label);
+    return;
+  }
+
+  // AI fallback
+  out.textContent = '⏳ Searching database… not found. Using AI…';
+  const enToBm = session.transLang === 'en-bm';
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1000,
+        messages:[{role:'user',content:`You are a Bemba language expert. Translate this ${enToBm?'English to Bemba':'Bemba to English'}. Return ONLY the translation, nothing else.\n\nText: "${input}"`}]
+      })
+    });
+    const d = await r.json();
+    const tr = d.content?.map(c=>c.text||'').join('').trim();
+    out.textContent = tr || '(No translation)';
+    showSourceBadge({source:'ai',label:'🤖 AI Translation — verify accuracy. You can suggest a correction below.'});
+    afterTranslation(input, tr, 'AI');
+  } catch(e) {
+    out.textContent = '❌ Translation failed. Check your connection.';
+  }
+}
+
+function afterTranslation(input, output, src) {
+  document.getElementById('suggestCurrentVal').textContent = output;
+  document.getElementById('suggestCard').style.display = 'block';
+  // Log
+  session.transHistory.unshift({input,output,src,time:new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})});
+  const th = document.getElementById('transHistory');
+  th.innerHTML = session.transHistory.slice(0,8).map(h=>`
+    <div style="display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--g100)">
+      <div style="flex:1"><div style="font-size:.82rem">${h.input}</div><div style="font-size:.85rem;color:var(--green);font-weight:600">${h.output}</div></div>
+      <div style="font-size:.7rem;color:var(--g500)">${h.time}</div>
+      <button class="btn sm secondary" onclick="navigator.clipboard.writeText('${h.output.replace(/'/g,"\\'")}').then(()=>toast('✅ Copied!'))">📋</button>
+    </div>`).join('');
+  logActivity(`Translated: "${input.substring(0,30)}" → "${output.substring(0,30)}"`, 'sky');
+}
+
+function swapLang() {
+  session.transLang = session.transLang==='en-bm' ? 'bm-en' : 'en-bm';
+  const enToBm = session.transLang==='en-bm';
+  document.getElementById('fromLbl').textContent       = enToBm?'🇬🇧 English':'🇿🇲 Bemba';
+  document.getElementById('toLbl').textContent         = enToBm?'🇿🇲 Bemba':'🇬🇧 English';
+  document.getElementById('inputLangHdr').textContent  = enToBm?'English':'Bemba';
+  document.getElementById('outputLangHdr').textContent = enToBm?'Bemba':'English';
+  hideSourceBadge();
+  document.getElementById('suggestCard').style.display = 'none';
+}
+function copyTrans() {
+  const t = document.getElementById('transOutput').textContent;
+  if (!t || t.includes('appears here') || t.startsWith('⏳')) { toast('Nothing to copy.'); return; }
+  navigator.clipboard.writeText(t).then(()=>toast('✅ Copied!'));
+}
+function saveTrans() {
+  session.savedCount++;
+  document.getElementById('profileSaved').textContent = session.savedCount;
+  toast('⭐ Saved!');
+}
+function shareTrans() {
+  const t = document.getElementById('transOutput').textContent;
+  if (navigator.share) navigator.share({title:'Bemba Translation — BembaHub',text:t}).catch(()=>{});
+  else navigator.clipboard.writeText(t).then(()=>toast('🔗 Copied to share.'));
+}
+function clearTransHistory() { session.transHistory=[]; document.getElementById('transHistory').innerHTML='<p style="color:var(--g500);font-size:.82rem">No translations yet.</p>'; }
+
+/* ── Suggest Correction ── */
+function openSuggestModal() { document.getElementById('suggestModal').classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function submitSuggestion() {
+  const sug = document.getElementById('suggestInput').value.trim();
+  if (!sug) { toast('Enter your suggested translation.'); return; }
+  const input = document.getElementById('transInput').value.trim();
+  const current = document.getElementById('suggestCurrentVal').textContent;
+  db.pending.push({ type:'correction', en:input, original:current, suggested:sug,
+    reason: document.getElementById('suggestReason').value,
+    by: session.user.name, status:'pending', time: new Date().toISOString() });
+  logActivity(`Correction suggested by ${session.user.name} for "${input}"`, 'gold');
+  closeModal('suggestModal');
+  document.getElementById('suggestInput').value='';
+  document.getElementById('suggestReason').value='';
+  toast('✅ Suggestion submitted for review. +2 pts');
+  session.user.pts += 2;
+  document.getElementById('profilePts').textContent = session.user.pts;
+}
+
+/* ══════════════════════════════════════════
+   CAMERA / OCR
+══════════════════════════════════════════ */
+function czClick(e) {
+  if (e.target===document.getElementById('camZone')||e.target.tagName==='H3'||e.target.tagName==='P')
+    document.getElementById('camFileIn').click();
+}
+function czDragOver(e) { e.preventDefault(); document.getElementById('camZone').classList.add('over'); }
+function czDragLeave() { document.getElementById('camZone').classList.remove('over'); }
+function czDrop(e) { e.preventDefault(); czDragLeave(); const f=e.dataTransfer.files[0]; if(f&&f.type.startsWith('image/')) loadCamFile(f); }
+function camFileChosen(e) { const f=e.target.files&&e.target.files[0]; if(f) loadCamFile(f); setTimeout(()=>{try{e.target.value='';}catch(x){}},100); }
+
+function loadCamFile(file) {
+  camMime = (file.type==='image/png'||file.type==='image/webp') ? 'image/jpeg' : (file.type||'image/jpeg');
+  const r = new FileReader();
+  r.onload = ev => {
+    const src = ev.target.result;
+    if (file.type==='image/png'||file.type==='image/webp') {
+      const tmp=new Image(); tmp.onload=()=>{
+        const cvs=document.createElement('canvas'); cvs.width=tmp.naturalWidth; cvs.height=tmp.naturalHeight;
+        cvs.getContext('2d').drawImage(tmp,0,0);
+        const j=cvs.toDataURL('image/jpeg',.92);
+        camB64=j.split(',')[1]; showCamPreview(j);
+      }; tmp.src=src;
+    } else { camB64=src.split(',')[1]; showCamPreview(src); }
+  };
+  r.onerror=()=>toast('❌ Failed to read file.');
+  r.readAsDataURL(file);
+}
+
+function showCamPreview(src) {
+  document.getElementById('camPreview').src = src;
+  document.getElementById('camPreviewWrap').style.display = 'block';
+  document.getElementById('camZone').style.display = 'none';
+  document.getElementById('camExtractBtn').disabled = false;
+  setCamStep(1);
+  toast('✅ Image loaded. Tap "Extract Text".');
+}
+
+function clearCam() {
+  camB64=null; camMime='image/jpeg';
+  document.getElementById('camPreviewWrap').style.display='none';
+  document.getElementById('camZone').style.display='';
+  document.getElementById('camExtractBtn').disabled=true;
+  document.getElementById('camResultsWrap').style.display='none';
+  document.getElementById('camTransBtn').disabled=true;
+  setCamStep(1);
+  closeLiveCam();
+}
+
+async function openLiveCam() {
+  if (!navigator.mediaDevices?.getUserMedia) { document.getElementById('camCapIn').click(); return; }
+  try {
+    liveStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    document.getElementById('liveVid').srcObject = liveStream;
+    document.getElementById('liveWrap').style.display = 'block';
+    document.getElementById('camZone').style.display = 'none';
+  } catch(err) {
+    if (err.name==='NotAllowedError') toast('🚫 Camera permission denied. Check browser settings.');
+    else if (err.name==='NotFoundError') toast('📷 No camera found. Use Upload instead.');
+    else { console.warn('getUserMedia:', err.message); document.getElementById('camCapIn').click(); }
+  }
+}
+function snapCam() {
+  const v=document.getElementById('liveVid'), cvs=document.getElementById('snapCvs');
+  cvs.width=v.videoWidth; cvs.height=v.videoHeight;
+  cvs.getContext('2d').drawImage(v,0,0);
+  const src=cvs.toDataURL('image/jpeg',.92);
+  camB64=src.split(',')[1]; camMime='image/jpeg';
+  closeLiveCam(); showCamPreview(src);
+}
+function closeLiveCam() {
+  if(liveStream){liveStream.getTracks().forEach(t=>t.stop());liveStream=null;}
+  document.getElementById('liveWrap').style.display='none';
+  document.getElementById('liveVid').srcObject=null;
+}
+
+function setCamStep(n) {
+  for(let i=1;i<=5;i++){
+    const el=document.getElementById('cs'+i); if(!el)return;
+    el.className='step-seg'+(i<n?' done':i===n?' active':'');
+  }
+}
+
+async function camExtract() {
+  if (!camB64) { toast('No image loaded.'); return; }
+  const btn=document.getElementById('camExtractBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Detecting…';
+  document.getElementById('camResultsWrap').style.display='block';
+  document.getElementById('camDetected').textContent='🔍 Scanning image…';
+  document.getElementById('camTranslation').textContent='—';
+  setCamStep(2);
+  try {
+    setCamStep(3);
+    const r = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1000,
+        messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:camMime,data:camB64}},
+          {type:'text',text:`You are an OCR specialist. Extract ALL visible text from this image exactly as it appears. If no text is visible, respond with: NO_TEXT_FOUND\nReturn ONLY the text — no commentary.`}
+        ]}]
+      })
+    });
+    if (!r.ok) throw new Error('API '+r.status);
+    const d = await r.json();
+    const txt = d.content?.map(c=>c.text||'').join('').trim();
+    if (!txt||txt==='NO_TEXT_FOUND') {
+      document.getElementById('camDetected').innerHTML='<span style="color:var(--red)">⚠️ Unable to detect text. Please upload a clearer image.</span>';
+      document.getElementById('camTransBtn').disabled=true;
+      setCamStep(2);
+    } else {
+      document.getElementById('camDetected').textContent=txt;
+      document.getElementById('camDetected').contentEditable='true';
+      document.getElementById('camTransBtn').disabled=false;
+      setCamStep(4); toast('✅ Text extracted! Review then translate.');
+    }
+  } catch(err) {
+    document.getElementById('camDetected').innerHTML=`<span style="color:var(--red)">❌ ${err.message||'Failed'}. Check your connection.</span>`;
+  } finally { btn.disabled=false; btn.innerHTML='🔍 Extract Text'; }
+}
+
+async function camDoTranslate() {
+  const txt = document.getElementById('camDetected').textContent.trim();
+  if (!txt||txt.startsWith('⚠️')||txt.startsWith('❌')) { toast('Extract text first.'); return; }
+  const btn=document.getElementById('camTransBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Translating…';
+  document.getElementById('camTranslation').textContent='⏳…';
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1500,
+        messages:[{role:'user',content:`You are a Bemba language expert. Translate this text into Bemba. Return ONLY the translation.\n\n${txt}`}]
+      })
+    });
+    if(!r.ok) throw new Error('API '+r.status);
+    const d=await r.json();
+    const tr=d.content?.map(c=>c.text||'').join('').trim();
+    document.getElementById('camTranslation').textContent=tr||'(No result)';
+    setCamStep(5);
+    const entry={detected:txt,translation:tr,time:new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})};
+    session.camHistory.unshift(entry);
+    buildCamHistory();
+    logActivity('Image translated via camera','sky');
+    toast('🎉 Translation done!');
+  } catch(err) {
+    document.getElementById('camTranslation').innerHTML=`<span style="color:var(--red)">❌ ${err.message}. Try again.</span>`;
+  } finally { btn.disabled=false; btn.innerHTML='✨ Translate to Bemba'; }
+}
+
+function buildCamHistory() {
+  const el=document.getElementById('camHistory');
+  if(!session.camHistory.length){el.innerHTML='<p style="color:var(--g500);font-size:.82rem">No image translations yet.</p>';return;}
+  el.innerHTML=session.camHistory.slice(0,6).map((h,i)=>`
+    <div style="padding:10px 0;border-bottom:1px solid var(--g100)">
+      <div style="font-size:.72rem;color:var(--g500)">${h.time}</div>
+      <div style="font-size:.8rem;color:var(--g700);margin:3px 0">${h.detected.substring(0,80)}${h.detected.length>80?'…':''}</div>
+      <div style="font-size:.85rem;color:var(--green);font-weight:600">${h.translation.substring(0,80)}${h.translation.length>80?'…':''}</div>
+      <button class="btn sm secondary" style="margin-top:6px" onclick="navigator.clipboard.writeText(session.camHistory[${i}].translation).then(()=>toast('✅ Copied!'))">📋 Copy</button>
+    </div>`).join('');
+}
+function clearCamHistory(){session.camHistory=[];buildCamHistory();}
+
+function toggleCamEdit() {
+  const el=document.getElementById('camDetected');
+  const editing=el.contentEditable==='true';
+  el.contentEditable=editing?'false':'true';
+  if(!editing)el.focus();
+}
+
+/* ══════════════════════════════════════════
+   VOICE
+══════════════════════════════════════════ */
+const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+function toggleMic() {
+  if(!SR){toast('⚠️ Speech recognition requires Chrome or Edge.');return;}
+  if(voiceListening){stopMic();return;}
+  voiceListening=true;
+  document.getElementById('micBtn').classList.add('on');
+  document.getElementById('micRing').classList.add('on');
+  const st=document.getElementById('micStatus'); st.textContent='🔴 Listening…'; st.className='mic-status on';
+  voiceRec=new SR(); voiceRec.lang='en-US'; voiceRec.interimResults=false;
+  voiceRec.onresult=async e=>{
+    const said=e.results[0][0].transcript; stopMic();
+    document.getElementById('voiceSpoken').textContent=said;
+    document.getElementById('voiceSpoken').style.cssText='font-size:.95rem;color:var(--g900);font-style:normal;min-height:60px;padding:12px;background:var(--g50);border-radius:8px';
+    await processVoice(said);
+  };
+  voiceRec.onerror=()=>{stopMic();toast('Could not understand. Try again in a quiet place.');};
+  voiceRec.onend=()=>{if(voiceListening)stopMic();};
+  voiceRec.start();
+}
+function stopMic() {
+  voiceListening=false;
+  try{voiceRec&&voiceRec.stop();}catch(x){}
+  document.getElementById('micBtn').classList.remove('on'); document.getElementById('micBtn').textContent='🎙️';
+  document.getElementById('micRing').classList.remove('on');
+  const st=document.getElementById('micStatus'); st.textContent='Tap the mic and speak in English'; st.className='mic-status';
+}
+async function processVoice(said) {
+  const bembaEl=document.getElementById('voiceBemba');
+  bembaEl.textContent='⏳ Translating…';
+  const saved=session.transLang; session.transLang='en-bm';
+  const hit=lookupDB(said); session.transLang=saved;
+  if(hit){bembaEl.textContent=hit.translation;speakText(hit.translation);return;}
+  try {
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:600,messages:[{role:'user',content:`Translate to Bemba. Return ONLY the translation.\n"${said}"`}]})});
+    const d=await r.json();
+    const tr=d.content?.map(c=>c.text||'').join('').trim();
+    bembaEl.textContent=tr||'(No result)'; speakText(tr);
+  } catch(e){bembaEl.textContent='❌ Failed.';}
+}
+function speakText(t){
+  if(!t||t.startsWith('❌')||t.startsWith('⏳'))return;
+  if('speechSynthesis'in window){window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.rate=.85;window.speechSynthesis.speak(u);}
+}
+function listenVoice(){speakText(document.getElementById('voiceBemba').textContent);}
+function copyVoice(){const t=document.getElementById('voiceBemba').textContent;if(!t||t.includes('appears here'))return;navigator.clipboard.writeText(t).then(()=>toast('✅ Copied!'));}
+
+function buildVoiceCats() {
+  const tabs=document.getElementById('voiceCatTabs'); if(tabs.dataset.init)return;
+  const cats=Object.keys(LESSONS);
+  tabs.innerHTML=cats.map((c,i)=>`<button class="tab${i===0?' active':''}" onclick="switchVoiceCat('${c}',this)">${c}</button>`).join('');
+  switchVoiceCat(cats[0],tabs.firstElementChild);
+  tabs.dataset.init='1';
+}
+function switchVoiceCat(cat,btn) {
+  document.querySelectorAll('#voiceCatTabs .tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  const p=document.getElementById('voicePhrases');
+  p.innerHTML=(LESSONS[cat]||[]).map(ph=>`
+    <div style="display:grid;grid-template-columns:1fr 1fr auto;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--g100)">
+      <div style="font-size:.85rem">${ph.en}</div>
+      <div style="font-size:.88rem;color:var(--green);font-weight:600">${ph.bm}</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn sm secondary" onclick="speakText('${ph.bm.replace(/'/g,"\\'")}')">🔊</button>
+      </div>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════════
+   DICTIONARY
+══════════════════════════════════════════ */
+function renderDict(data) {
+  const el=document.getElementById('dictResults');
+  if(!data.length){el.innerHTML='<div class="dict-entry" style="color:var(--g500)">No results found.</div>';return;}
+  el.innerHTML=data.map(d=>`
+    <div class="dict-entry">
+      <div class="dict-en">${d.en}</div>
+      <div class="dict-bm">${d.bm}</div>
+      <div class="dict-meta"><span class="dict-tag">${d.cat}</span><span class="dict-tag">👤 ${d.contrib}</span><span class="badge approved" style="padding:2px 8px">Approved</span></div>
+      <div class="dict-pron">🔊 /${d.pron}/</div>
+      <div class="dict-ex">📝 ${d.ex}</div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn sm secondary" onclick="speakText('${d.bm.replace(/'/g,"\\'")}')">🔊 Listen</button>
+        <button class="btn sm secondary" onclick="toast('⭐ Added to favorites!')">☆ Favorite</button>
+      </div>
+    </div>`).join('');
+}
+function searchDict() {
+  const q=document.getElementById('dictQ').value.toLowerCase().trim();
+  if(!q){renderDict(dictData);return;}
+  renderDict(dictData.filter(d=>d.en.toLowerCase().includes(q)||d.bm.toLowerCase().includes(q)||d.cat.toLowerCase().includes(q)));
+}
+function buildCatFilters() {
+  const cats=[...new Set(dictData.map(d=>d.cat))];
+  document.getElementById('catFilters').innerHTML=cats.map(c=>`
+    <button class="btn sm secondary" onclick="filterCat('${c}')" style="border-radius:20px">${c}</button>`).join('');
+}
+function filterCat(cat) { renderDict(dictData.filter(d=>d.cat===cat)); }
+function quickSearch(q) { goPanel('dictionary'); document.getElementById('dictQ').value=q; searchDict(); }
+
+/* ══════════════════════════════════════════
+   COMMUNITY
+══════════════════════════════════════════ */
+function commTab(tab, btn) {
+  document.querySelectorAll('.comm-panel').forEach(p=>{p.style.display='none';});
+  document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('comm-'+tab).style.display='block';
+  btn.classList.add('active');
+  if(tab==='pending') buildPending();
+  if(tab==='history') buildHistory();
+  if(tab==='leaderboard') buildLeaderboard();
+}
+function submitWord() {
+  const en=document.getElementById('c-en').value.trim();
+  const bm=document.getElementById('c-bm').value.trim();
+  const cat=document.getElementById('c-cat').value;
+  const pron=document.getElementById('c-pron').value.trim();
+  const ex=document.getElementById('c-ex').value.trim();
+  if(!en||!bm){toast('English and Bemba fields are required.');return;}
+  const entry={type:'word',en,bm,cat,pron,ex,by:session.user.name,status:'pending',time:new Date().toISOString()};
+  db.pending.push(entry);
+  session.user.pts+=2; session.contribs++;
+  document.getElementById('profilePts').textContent=session.user.pts;
+  document.getElementById('profileContribs').textContent=session.contribs;
+  logActivity(`"${en}" submitted by ${session.user.name}`,'gold');
+  ['c-en','c-bm','c-pron','c-ex'].forEach(id=>document.getElementById(id).value='');
+  toast('✅ Submitted! Awaiting review. +2 pts');
+  updatePendingBadge();
+}
+function updatePendingBadge() {
+  const n=db.pending.filter(p=>p.status==='pending').length;
+  document.getElementById('pendingCount').textContent=n;
+  document.getElementById('pendingBadge').textContent=`${n} pending`;
+  const dot=document.getElementById('notifDot');
+  dot.style.display=n>0?'block':'none';
+}
+function buildPending() {
+  const u=session.user;
+  const canReview=u.role==='admin'||u.role==='moderator';
+  const rows=db.pending;
+  document.getElementById('pendingTbl').innerHTML=rows.length?rows.map((p,i)=>`
+    <tr>
+      <td>${p.en}</td><td>${p.bm||p.suggested||'—'}</td><td>${p.cat||'—'}</td>
+      <td>${p.by}</td>
+      <td><span class="badge ${p.status}">${p.status}</span></td>
+      <td>${canReview&&p.status==='pending'?`
+        <button class="btn sm success" onclick="reviewItem(${i},'approved')">✓ Approve</button>
+        <button class="btn sm danger" style="margin-left:4px" onclick="reviewItem(${i},'rejected')">✗ Reject</button>`:
+        (p.status==='pending'?'Awaiting review':'')}
+      </td>
+    </tr>`).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--g500);padding:20px">No submissions yet.</td></tr>';
+}
+function reviewItem(i, status) {
+  db.pending[i].status=status;
+  if(status==='approved') {
+    const p=db.pending[i];
+    if(p.type==='word'&&p.en&&p.bm) {
+      db.words.push({id:db.words.length+1,en:p.en,bm:p.bm,cat:p.cat||'General',pron:p.pron||'—',ex:p.ex||'—',contrib:p.by,status:'approved'});
+      dictData=db.words; // refresh dict
+    }
+    // Award points to contributor
+    const contributor=db.users.find(u=>u.name===p.by);
+    if(contributor){contributor.pts+=(p.type==='correction'?5:10);if(contributor===session.user)document.getElementById('profilePts').textContent=contributor.pts;}
+    logActivity(`"${p.en}" approved by ${session.user.name}`,'green');
+    toast(`✅ Approved! Contributor awarded ${p.type==='correction'?5:10} pts.`);
+  } else {
+    logActivity(`"${p.en}" rejected by ${session.user.name}`,'red');
+    toast('✗ Rejected.');
+  }
+  buildPending(); updatePendingBadge(); buildDashboard();
+}
+function buildHistory() {
+  const u=session.user;
+  const mine=db.pending.filter(p=>p.by===u.name);
+  document.getElementById('historyTbl').innerHTML=mine.length?mine.map(p=>`
+    <tr>
+      <td>${p.en}</td><td>${p.bm||p.suggested||'—'}</td><td>${p.cat||'—'}</td>
+      <td><span class="badge ${p.status}">${p.status}</span></td>
+      <td>${p.status==='approved'?(p.type==='correction'?'5':'10'):'—'}</td>
+    </tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:var(--g500);padding:20px">No contributions yet. Submit a word to get started!</td></tr>';
+}
+function buildLeaderboard() {
+  const sorted=[...db.users].sort((a,b)=>b.pts-a.pts);
+  const medals=['🥇','🥈','🥉'];
+  document.getElementById('lbBody').innerHTML=sorted.map((u,i)=>`
+    <div class="lb-row">
+      <div class="lb-rank ${i<3?['gold','silver','bronze'][i]:''}">${i<3?medals[i]:i+1}</div>
+      <div class="lb-av" style="background:${u.color}">${u.initials}</div>
+      <div class="lb-name">${u.name} <span class="badge ${u.role}">${u.role}</span></div>
+      <div class="lb-pts">${u.pts} pts</div>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════════
+   USERS (admin)
+══════════════════════════════════════════ */
+function buildUsersTable() {
+  document.getElementById('userCount').textContent=`${db.users.length} users`;
+  document.getElementById('usersTbl').innerHTML=db.users.map((u,i)=>`
+    <tr>
+      <td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:50%;background:${u.color};display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#fff">${u.initials}</div>${u.name}</div></td>
+      <td>${u.email}</td>
+      <td><span class="badge ${u.role}">${u.role}</span></td>
+      <td>${u.pts}</td>
+      <td><span class="badge ${u.status==='active'?'approved':'rejected'}">${u.status}</span></td>
+      <td>
+        ${u.id!==session.user.id?`<button class="btn sm ${u.status==='active'?'danger':'success'}" onclick="toggleUserStatus(${i})">${u.status==='active'?'Suspend':'Activate'}</button>`:'<span style="color:var(--g500);font-size:.75rem">You</span>'}
+      </td>
+    </tr>`).join('');
+}
+function toggleUserStatus(i) {
+  db.users[i].status=db.users[i].status==='active'?'suspended':'active';
+  logActivity(`User "${db.users[i].name}" ${db.users[i].status} by admin`,'red');
+  buildUsersTable();
+  toast(`User ${db.users[i].status==='active'?'activated':'suspended'}.`);
+}
+
+/* ══════════════════════════════════════════
+   PROFILE
+══════════════════════════════════════════ */
+function saveProfile() {
+  const name=document.getElementById('editName').value.trim();
+  const email=document.getElementById('editEmail').value.trim();
+  if(!name||!email){toast('Fill in all fields.');return;}
+  session.user.name=name; session.user.email=email;
+  document.getElementById('profileName').textContent=name;
+  document.getElementById('profileMeta').textContent=`${session.user.role.charAt(0).toUpperCase()+session.user.role.slice(1)} · ${email}`;
+  document.getElementById('sbName').textContent=name;
+  toast('✅ Profile updated.');
+}
+
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+function toast(msg) {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+/* ══════════════════════════════════════════
+   KEYBOARD SHORTCUTS
+══════════════════════════════════════════ */
+document.addEventListener('keydown', e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){
+    const panel=document.querySelector('.panel.active');
+    if(panel&&panel.id==='panel-translate') runTranslation();
+  }
+});
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+updatePendingBadge();
+</script>
+</body>
+</html>
