@@ -1113,35 +1113,41 @@ tr:hover td { background: var(--g50); }
 <script>
 'use strict';
 /* ══════════════════════════════════════════
+   API CLIENT — BembaHub Backend
+══════════════════════════════════════════ */
+const API_BASE = 'https://bembahub-backend.onrender.com';
+let authToken = localStorage.getItem('bh_token') || null;
+
+async function api(path, { method = 'GET', body, auth = true } = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (auth && authToken) headers['Authorization'] = 'Bearer ' + authToken;
+  let r;
+  try {
+    r = await fetch(API_BASE + path, {
+      method,
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+  } catch (e) {
+    throw new Error('Could not reach BembaHub backend. Check your connection.');
+  }
+  let data = {};
+  try { data = await r.json(); } catch (e) { /* no body */ }
+  if (!r.ok) {
+    if (r.status === 401) { authToken = null; localStorage.removeItem('bh_token'); }
+    throw new Error(data.error || `Request failed (${r.status})`);
+  }
+  return data;
+}
+function setAuthToken(token) {
+  authToken = token;
+  if (token) localStorage.setItem('bh_token', token);
+  else localStorage.removeItem('bh_token');
+}
+
+/* ══════════════════════════════════════════
    DATA STORE
 ══════════════════════════════════════════ */
-const USERS = [
-  { id:1, name:'Joseph Bubenshi', email:'admin@bembahub.com',  pass:'admin123',  role:'admin',      pts:350, status:'active', initials:'JB', color:'#4A1299' },
-  { id:2, name:'Mary Mutale',      email:'mod@bembahub.com',    pass:'mod123',    role:'moderator',  pts:180, status:'active', initials:'MM', color:'#1251A3' },
-  { id:3, name:'Peter Chanda',     email:'trans@bembahub.com',  pass:'trans123',  role:'translator', pts:120, status:'active', initials:'PC', color:'#1E5C20' },
-  { id:4, name:'Gift Mwansa',      email:'gift@bembahub.com',   pass:'gift123',   role:'translator', pts: 95, status:'active', initials:'GM', color:'#7C3A12' },
-  { id:5, name:'Grace Tembo',      email:'grace@bembahub.com',  pass:'grace123',  role:'visitor',    pts: 12, status:'active', initials:'GT', color:'#616161' },
-  { id:6, name:'Guest',            email:'guest@bembahub.com',  pass:'',          role:'visitor',    pts:  0, status:'active', initials:'G',  color:'#9E9E9E' },
-];
-
-const DICT = [
-  {id:1,en:'Good morning',bm:'Mwashibukeni',cat:'Greetings',pron:'mwa-shi-bu-KE-ni',ex:'Mwashibukeni, muli shani?',contrib:'System',status:'approved'},
-  {id:2,en:'Good evening',bm:'Mwabombeni',cat:'Greetings',pron:'mwa-BOM-be-ni',ex:'Mwabombeni, nakutemenwa.',contrib:'System',status:'approved'},
-  {id:3,en:'How are you',bm:'Muli shani',cat:'Greetings',pron:'moo-li SHA-ni',ex:'Muli shani? Nalikwata bwino.',contrib:'System',status:'approved'},
-  {id:4,en:'Thank you',bm:'Natotela',cat:'Common Phrases',pron:'na-TO-te-la',ex:'Natotela sana!',contrib:'Admin',status:'approved'},
-  {id:5,en:'I love you',bm:'Nakutemenwa',cat:'Common Phrases',pron:'na-ku-TE-me-nwa',ex:'Nakutemenwa, umukwai.',contrib:'Admin',status:'approved'},
-  {id:6,en:'Welcome',bm:'Mwapokelelwa',cat:'Greetings',pron:'mwa-po-ke-LEL-wa',ex:'Mwapokelelwa ku Zambia!',contrib:'Joseph B',status:'approved'},
-  {id:7,en:'Water',bm:'Amenshi',cat:'Daily',pron:'a-MEN-shi',ex:'Ndefwaya amenshi.',contrib:'System',status:'approved'},
-  {id:8,en:'Food',bm:'Ifilyo',cat:'Daily',pron:'i-FI-lyo',ex:'Ifilyo fyali ifyabufi!',contrib:'System',status:'approved'},
-  {id:9,en:'God',bm:'Lesa',cat:'Church',pron:'LE-sa',ex:'Lesa alelefya.',contrib:'Admin',status:'approved'},
-  {id:10,en:'Father',bm:'Tata',cat:'Family',pron:'TA-ta',ex:'Tata wandi alikwata imyaka makumi yabili.',contrib:'System',status:'approved'},
-  {id:11,en:'Mother',bm:'Mayo',cat:'Family',pron:'MA-yo',ex:'Mayo wandi alimba ubwali.',contrib:'System',status:'approved'},
-  {id:12,en:'School',bm:'Sukuulu',cat:'School',pron:'su-KOO-lu',ex:'Naya ku sukuulu.',contrib:'System',status:'approved'},
-  {id:13,en:'Money',bm:'Impiya',cat:'Business',pron:'IM-pi-ya',ex:'Nalikwata impiya yambula.',contrib:'Admin',status:'approved'},
-  {id:14,en:'Road',bm:'Inzila',cat:'Travel',pron:'IN-zi-la',ex:'Inzila ya ku Lusaka.',contrib:'System',status:'approved'},
-  {id:15,en:'Doctor',bm:'Ndoshi',cat:'Health',pron:'NDO-shi',ex:'Naya ku Ndoshi.',contrib:'System',status:'approved'},
-];
-
 const LESSONS = {
   'Greetings':   [{en:'Good morning',bm:'Mwashibukeni',pron:'mwa-shi-bu-KE-ni'},{en:'Good evening',bm:'Mwabombeni',pron:'mwa-BOM-be-ni'},{en:'How are you?',bm:'Muli shani?',pron:'moo-li SHA-ni'},{en:'I am fine',bm:'Nalikwata bwino',pron:'na-li-KWA-ta BWI-no'},{en:'Welcome',bm:'Mwapokelelwa',pron:'mwa-po-ke-LEL-wa'}],
   'Family':      [{en:'Father',bm:'Tata',pron:'TA-ta'},{en:'Mother',bm:'Mayo',pron:'MA-yo'},{en:'Brother',bm:'Mwine',pron:'MWI-ne'},{en:'Sister',bm:'Mulumendo',pron:'mu-lu-MEN-do'},{en:'Child',bm:'Umwana',pron:'um-WA-na'}],
@@ -1149,9 +1155,9 @@ const LESSONS = {
   'Daily':       [{en:'Thank you',bm:'Natotela',pron:'na-TO-te-la'},{en:'I love you',bm:'Nakutemenwa',pron:'na-ku-TE-me-nwa'},{en:'Water',bm:'Amenshi',pron:'a-MEN-shi'},{en:'Food',bm:'Ifilyo',pron:'i-FI-lyo'}],
 };
 
-let db = { words: [...DICT], pending: [], users: [...USERS], actLog: [], suggestions: [] };
-let session = { user: null, transLang:'en-bm', savedCount:0, contribs:0, pts:0, transHistory:[], camHistory:[] };
-let dictData = [...DICT];
+let db = { words: [], pending: [], users: [], actLog: [], suggestions: [] };
+let session = { user: null, transLang:'en-bm', savedCount:0, contribs:0, pts:0, transHistory:[], camHistory:[], favoriteIds:new Set() };
+let dictData = [];
 let selectedRegRole = 'visitor';
 let camB64 = null, camMime = 'image/jpeg', liveStream = null;
 let voiceListening = false, voiceRec = null;
@@ -1247,30 +1253,46 @@ function selectRegRole(el) {
   el.classList.add('selected');
   selectedRegRole = el.dataset.role;
 }
-function doLogin() {
+async function doLogin() {
   const email = document.getElementById('li-email').value.trim();
   const pass  = document.getElementById('li-pass').value;
-  const user  = USERS.find(u=>u.email===email && u.pass===pass);
-  if (!user) { toast('❌ Invalid email or password.'); return; }
-  if (user.status==='suspended') { toast('🚫 Account suspended. Contact admin.'); return; }
-  enterPortal(user);
+  if (!email||!pass) { toast('Please fill in all fields.'); return; }
+  try {
+    const { token, user } = await api('/auth/login', { method:'POST', auth:false, body:{ email, password:pass } });
+    setAuthToken(token);
+    await enterPortal(user);
+  } catch (e) { toast('❌ ' + e.message); }
 }
-function doRegister() {
+async function doRegister() {
   const name  = document.getElementById('reg-name').value.trim();
   const email = document.getElementById('reg-email').value.trim();
   const pass  = document.getElementById('reg-pass').value;
   if (!name||!email||!pass) { toast('Please fill in all fields.'); return; }
-  if (db.users.find(u=>u.email===email)) { toast('Email already registered. Please sign in.'); return; }
-  const initials = name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
-  const colors = ['#7C3A12','#1251A3','#1E5C20','#4A1299','#C8793A'];
-  const newUser = { id: db.users.length+1, name, email, pass, role: selectedRegRole, pts:0, status:'active', initials, color: colors[db.users.length%colors.length] };
-  db.users.push(newUser); USERS.push(newUser);
-  enterPortal(newUser);
+  try {
+    const { token, user } = await api('/auth/register', { method:'POST', auth:false, body:{ name, email, password:pass, role:selectedRegRole } });
+    setAuthToken(token);
+    await enterPortal(user);
+  } catch (e) { toast('❌ ' + e.message); }
 }
-function guestLogin() {
-  enterPortal(USERS.find(u=>u.role==='visitor' && u.name==='Guest'));
+async function guestLogin() {
+  try {
+    const { token, user } = await api('/auth/guest', { method:'POST', auth:false });
+    setAuthToken(token);
+    await enterPortal(user);
+  } catch (e) { toast('❌ ' + e.message); }
 }
-function enterPortal(user) {
+async function tryResumeSession() {
+  if (!authToken) return false;
+  try {
+    const { user } = await api('/auth/me');
+    await enterPortal(user);
+    return true;
+  } catch (e) {
+    setAuthToken(null);
+    return false;
+  }
+}
+async function enterPortal(user) {
   session.user = user;
   session.pts  = user.pts;
   document.getElementById('loginGate').classList.remove('show');
@@ -1289,12 +1311,64 @@ function enterPortal(user) {
   document.getElementById('editName').value  = user.name;
   document.getElementById('editEmail').value = user.email;
   buildNav();
+  await Promise.all([loadDictionary(), loadLeaderboard(), loadFavorites(), loadTransHistory(), loadMyContributions()]);
+  if (user.role==='admin'||user.role==='moderator') await loadPending();
   buildDashboard();
   goPanel('dashboard');
-  logActivity(`${user.name} signed in`, 'green');
+}
+
+/* ══════════════════════════════════════════
+   BACKEND DATA LOADERS
+══════════════════════════════════════════ */
+async function loadDictionary() {
+  try {
+    const { words } = await api('/dictionary', { auth:false });
+    db.words = words; dictData = words;
+    const el = document.getElementById('dictResults');
+    if (el) { renderDict(dictData); buildCatFilters(); }
+  } catch (e) { /* leave dictionary empty on failure */ }
+}
+async function loadLeaderboard() {
+  try {
+    const { leaderboard } = await api('/leaderboard', { auth:false });
+    db.users = leaderboard;
+  } catch (e) { /* ignore */ }
+}
+async function loadMyContributions() {
+  try {
+    const { entries } = await api('/dictionary/mine');
+    db.myPending = entries;
+  } catch (e) { db.myPending = []; }
+}
+async function loadPending() {
+  try {
+    const { entries } = await api('/dictionary/pending');
+    db.pending = entries;
+    updatePendingBadge();
+  } catch (e) { /* not permitted or offline */ }
+}
+async function loadFavorites() {
+  try {
+    const { favorites } = await api('/favorites');
+    session.favoriteIds = new Set(favorites.map(f=>f.id));
+    document.getElementById('profileSaved').textContent = favorites.length;
+  } catch (e) { /* ignore */ }
+}
+async function loadTransHistory() {
+  try {
+    const [t, c] = await Promise.all([
+      api('/history?kind=translation'),
+      api('/history?kind=camera'),
+    ]);
+    session.transHistory = t.entries.map(h=>({input:h.input,output:h.output,src:h.source,time:new Date(h.time).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}));
+    session.camHistory = c.entries.map(h=>({detected:h.input,translation:h.output,time:new Date(h.time).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}));
+    renderTransHistory(); buildCamHistory();
+  } catch (e) { /* ignore */ }
 }
 function doLogout() {
   session.user = null;
+  session.transHistory = []; session.camHistory = []; session.favoriteIds = new Set();
+  setAuthToken(null);
   document.getElementById('loginGate').classList.add('show');
   document.getElementById('sbNav').innerHTML = '';
   toast('Signed out.');
@@ -1327,8 +1401,8 @@ function buildDashboard() {
       {icon:'🏆',val: u.pts,label:'Your Points',cls:'purple'},
     ],
     translator: [
-      {icon:'✍️',val: db.pending.filter(p=>p.by===u.name).length,label:'My Submissions',cls:'gold'},
-      {icon:'✅',val: db.pending.filter(p=>p.by===u.name&&p.status==='approved').length,label:'Approved',cls:'green'},
+      {icon:'✍️',val: (db.myPending||[]).length,label:'My Submissions',cls:'gold'},
+      {icon:'✅',val: (db.myPending||[]).filter(p=>p.status==='approved').length,label:'Approved',cls:'green'},
       {icon:'🏆',val: u.pts,label:'Your Points',cls:'purple'},
       {icon:'🔤',val:'12,847',label:'Total Translations',cls:'sky'},
     ],
@@ -1377,28 +1451,6 @@ function logActivity(text, color='green') {
 /* ══════════════════════════════════════════
    TRANSLATOR — DB-FIRST PRIORITY
 ══════════════════════════════════════════ */
-function lookupDB(input) {
-  const q = input.toLowerCase().trim();
-  const enToBm = session.transLang === 'en-bm';
-  // Approved community words first, then DICT
-  const pool = [...db.pending.filter(p=>p.status==='approved'), ...db.words];
-  for (const d of pool) {
-    const key = enToBm ? (d.en||'') : (d.bm||'');
-    if (key.toLowerCase().trim() === q) {
-      return { translation: enToBm ? (d.bm||d.suggested) : (d.en||d.original), source:'approved',
-               label:`✅ Approved — verified by BembaHub${d.by?' · by '+d.by:''}` };
-    }
-  }
-  // Partial
-  for (const d of db.words) {
-    const key = enToBm ? d.en : d.bm;
-    if (key.toLowerCase().includes(q) && q.length >= 4) {
-      return { translation: enToBm ? d.bm : d.en, source:'approved', label:'✅ Approved (close match) — BembaHub' };
-    }
-  }
-  return null;
-}
-
 function showSourceBadge(result) {
   const el = document.getElementById('transSourceBadge');
   el.style.display = 'flex';
@@ -1416,49 +1468,37 @@ async function runTranslation() {
   const out = document.getElementById('transOutput');
   out.className = 'trans-box-output';
   hideSourceBadge();
+  out.textContent = '⏳ Translating…';
 
-  // DB lookup first
-  const hit = lookupDB(input);
-  if (hit) {
-    out.textContent = hit.translation;
-    showSourceBadge(hit);
-    afterTranslation(input, hit.translation, hit.label);
-    return;
-  }
-
-  // AI fallback
-  out.textContent = '⏳ Searching database… not found. Using AI…';
-  const enToBm = session.transLang === 'en-bm';
   try {
-    const r = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1000,
-        messages:[{role:'user',content:`You are a Bemba language expert. Translate this ${enToBm?'English to Bemba':'Bemba to English'}. Return ONLY the translation, nothing else.\n\nText: "${input}"`}]
-      })
-    });
-    const d = await r.json();
-    const tr = d.content?.map(c=>c.text||'').join('').trim();
-    out.textContent = tr || '(No translation)';
-    showSourceBadge({source:'ai',label:'🤖 AI Translation — verify accuracy. You can suggest a correction below.'});
-    afterTranslation(input, tr, 'AI');
+    const result = await api('/translate', { auth:false, method:'POST', body:{ text:input, direction:session.transLang } });
+    out.textContent = result.translation || '(No translation)';
+    showSourceBadge({ source: result.source==='dictionary'?'approved':'ai', label: (result.source==='dictionary'?'✅ ':'🤖 ') + (result.label||'') });
+    afterTranslation(input, result.translation, result.source);
   } catch(e) {
-    out.textContent = '❌ Translation failed. Check your connection.';
+    out.textContent = '❌ ' + e.message;
   }
 }
 
 function afterTranslation(input, output, src) {
   document.getElementById('suggestCurrentVal').textContent = output;
   document.getElementById('suggestCard').style.display = 'block';
-  // Log
   session.transHistory.unshift({input,output,src,time:new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})});
+  renderTransHistory();
+  logActivity(`Translated: "${input.substring(0,30)}" → "${output.substring(0,30)}"`, 'sky');
+  if (session.user) {
+    api('/history', { method:'POST', body:{ kind:'translation', input, output, source:src } }).catch(()=>{});
+  }
+}
+function renderTransHistory() {
   const th = document.getElementById('transHistory');
-  th.innerHTML = session.transHistory.slice(0,8).map(h=>`
+  if (!th) return;
+  th.innerHTML = session.transHistory.length ? session.transHistory.slice(0,8).map(h=>`
     <div style="display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--g100)">
       <div style="flex:1"><div style="font-size:.82rem">${h.input}</div><div style="font-size:.85rem;color:var(--green);font-weight:600">${h.output}</div></div>
       <div style="font-size:.7rem;color:var(--g500)">${h.time}</div>
-      <button class="btn sm secondary" onclick="navigator.clipboard.writeText('${h.output.replace(/'/g,"\\'")}').then(()=>toast('✅ Copied!'))">📋</button>
-    </div>`).join('');
-  logActivity(`Translated: "${input.substring(0,30)}" → "${output.substring(0,30)}"`, 'sky');
+      <button class="btn sm secondary" onclick="navigator.clipboard.writeText('${(h.output||'').replace(/'/g,"\\'")}').then(()=>toast('✅ Copied!'))">📋</button>
+    </div>`).join('') : '<p style="color:var(--g500);font-size:.82rem">No translations yet.</p>';
 }
 
 function swapLang() {
@@ -1477,35 +1517,40 @@ function copyTrans() {
   navigator.clipboard.writeText(t).then(()=>toast('✅ Copied!'));
 }
 function saveTrans() {
-  session.savedCount++;
-  document.getElementById('profileSaved').textContent = session.savedCount;
-  toast('⭐ Saved!');
+  toast('⭐ Already saved to your translation history.');
 }
 function shareTrans() {
   const t = document.getElementById('transOutput').textContent;
   if (navigator.share) navigator.share({title:'Bemba Translation — BembaHub',text:t}).catch(()=>{});
   else navigator.clipboard.writeText(t).then(()=>toast('🔗 Copied to share.'));
 }
-function clearTransHistory() { session.transHistory=[]; document.getElementById('transHistory').innerHTML='<p style="color:var(--g500);font-size:.82rem">No translations yet.</p>'; }
+function clearTransHistory() {
+  session.transHistory=[];
+  renderTransHistory();
+  if (session.user) api('/history?kind=translation', { method:'DELETE' }).catch(()=>{});
+}
 
 /* ── Suggest Correction ── */
 function openSuggestModal() { document.getElementById('suggestModal').classList.add('show'); }
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-function submitSuggestion() {
+async function submitSuggestion() {
   const sug = document.getElementById('suggestInput').value.trim();
   if (!sug) { toast('Enter your suggested translation.'); return; }
+  if (!session.user) { toast('Sign in to submit a correction.'); return; }
   const input = document.getElementById('transInput').value.trim();
-  const current = document.getElementById('suggestCurrentVal').textContent;
-  db.pending.push({ type:'correction', en:input, original:current, suggested:sug,
-    reason: document.getElementById('suggestReason').value,
-    by: session.user.name, status:'pending', time: new Date().toISOString() });
-  logActivity(`Correction suggested by ${session.user.name} for "${input}"`, 'gold');
-  closeModal('suggestModal');
-  document.getElementById('suggestInput').value='';
-  document.getElementById('suggestReason').value='';
-  toast('✅ Suggestion submitted for review. +2 pts');
-  session.user.pts += 2;
-  document.getElementById('profilePts').textContent = session.user.pts;
+  const enToBm = session.transLang === 'en-bm';
+  try {
+    const { user } = await api('/dictionary/suggest', { method:'POST', body:{
+      en: enToBm ? input : sug, bm: enToBm ? sug : input, cat:'General', ex: document.getElementById('suggestReason').value || ''
+    }});
+    session.user.pts = user.pts;
+    document.getElementById('profilePts').textContent = user.pts;
+    logActivity(`Correction suggested by ${session.user.name} for "${input}"`, 'gold');
+    closeModal('suggestModal');
+    document.getElementById('suggestInput').value='';
+    document.getElementById('suggestReason').value='';
+    toast('✅ Suggestion submitted for review. +2 pts');
+  } catch (e) { toast('❌ ' + e.message); }
 }
 
 /* ══════════════════════════════════════════
@@ -1602,18 +1647,7 @@ async function camExtract() {
   setCamStep(2);
   try {
     setCamStep(3);
-    const r = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1000,
-        messages:[{role:'user',content:[
-          {type:'image',source:{type:'base64',media_type:camMime,data:camB64}},
-          {type:'text',text:`You are an OCR specialist. Extract ALL visible text from this image exactly as it appears. If no text is visible, respond with: NO_TEXT_FOUND\nReturn ONLY the text — no commentary.`}
-        ]}]
-      })
-    });
-    if (!r.ok) throw new Error('API '+r.status);
-    const d = await r.json();
-    const txt = d.content?.map(c=>c.text||'').join('').trim();
+    const { text: txt } = await api('/ocr', { auth:false, method:'POST', body:{ imageBase64:camB64, mimeType:camMime } });
     if (!txt||txt==='NO_TEXT_FOUND') {
       document.getElementById('camDetected').innerHTML='<span style="color:var(--red)">⚠️ Unable to detect text. Please upload a clearer image.</span>';
       document.getElementById('camTransBtn').disabled=true;
@@ -1636,15 +1670,8 @@ async function camDoTranslate() {
   btn.disabled=true; btn.innerHTML='<span class="spin"></span> Translating…';
   document.getElementById('camTranslation').textContent='⏳…';
   try {
-    const r = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1500,
-        messages:[{role:'user',content:`You are a Bemba language expert. Translate this text into Bemba. Return ONLY the translation.\n\n${txt}`}]
-      })
-    });
-    if(!r.ok) throw new Error('API '+r.status);
-    const d=await r.json();
-    const tr=d.content?.map(c=>c.text||'').join('').trim();
+    const result = await api('/translate', { auth:false, method:'POST', body:{ text:txt, direction:'en-bm' } });
+    const tr = result.translation;
     document.getElementById('camTranslation').textContent=tr||'(No result)';
     setCamStep(5);
     const entry={detected:txt,translation:tr,time:new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})};
@@ -1652,6 +1679,7 @@ async function camDoTranslate() {
     buildCamHistory();
     logActivity('Image translated via camera','sky');
     toast('🎉 Translation done!');
+    if (session.user) api('/history', { method:'POST', body:{ kind:'camera', input:txt, output:tr, source:result.source } }).catch(()=>{});
   } catch(err) {
     document.getElementById('camTranslation').innerHTML=`<span style="color:var(--red)">❌ ${err.message}. Try again.</span>`;
   } finally { btn.disabled=false; btn.innerHTML='✨ Translate to Bemba'; }
@@ -1659,6 +1687,7 @@ async function camDoTranslate() {
 
 function buildCamHistory() {
   const el=document.getElementById('camHistory');
+  if(!el) return;
   if(!session.camHistory.length){el.innerHTML='<p style="color:var(--g500);font-size:.82rem">No image translations yet.</p>';return;}
   el.innerHTML=session.camHistory.slice(0,6).map((h,i)=>`
     <div style="padding:10px 0;border-bottom:1px solid var(--g100)">
@@ -1668,7 +1697,10 @@ function buildCamHistory() {
       <button class="btn sm secondary" style="margin-top:6px" onclick="navigator.clipboard.writeText(session.camHistory[${i}].translation).then(()=>toast('✅ Copied!'))">📋 Copy</button>
     </div>`).join('');
 }
-function clearCamHistory(){session.camHistory=[];buildCamHistory();}
+function clearCamHistory(){
+  session.camHistory=[];buildCamHistory();
+  if (session.user) api('/history?kind=camera', { method:'DELETE' }).catch(()=>{});
+}
 
 function toggleCamEdit() {
   const el=document.getElementById('camDetected');
@@ -1709,16 +1741,12 @@ function stopMic() {
 async function processVoice(said) {
   const bembaEl=document.getElementById('voiceBemba');
   bembaEl.textContent='⏳ Translating…';
-  const saved=session.transLang; session.transLang='en-bm';
-  const hit=lookupDB(said); session.transLang=saved;
-  if(hit){bembaEl.textContent=hit.translation;speakText(hit.translation);return;}
   try {
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:600,messages:[{role:'user',content:`Translate to Bemba. Return ONLY the translation.\n"${said}"`}]})});
-    const d=await r.json();
-    const tr=d.content?.map(c=>c.text||'').join('').trim();
+    const result = await api('/translate', { auth:false, method:'POST', body:{ text:said, direction:'en-bm' } });
+    const tr = result.translation;
     bembaEl.textContent=tr||'(No result)'; speakText(tr);
-  } catch(e){bembaEl.textContent='❌ Failed.';}
+    if (session.user) api('/history', { method:'POST', body:{ kind:'voice', input:said, output:tr, source:result.source } }).catch(()=>{});
+  } catch(e){bembaEl.textContent='❌ '+e.message;}
 }
 function speakText(t){
   if(!t||t.startsWith('❌')||t.startsWith('⏳'))return;
@@ -1753,8 +1781,11 @@ function switchVoiceCat(cat,btn) {
 ══════════════════════════════════════════ */
 function renderDict(data) {
   const el=document.getElementById('dictResults');
+  if(!el) return;
   if(!data.length){el.innerHTML='<div class="dict-entry" style="color:var(--g500)">No results found.</div>';return;}
-  el.innerHTML=data.map(d=>`
+  el.innerHTML=data.map(d=>{
+    const fav = session.favoriteIds.has(d.id);
+    return `
     <div class="dict-entry">
       <div class="dict-en">${d.en}</div>
       <div class="dict-bm">${d.bm}</div>
@@ -1763,9 +1794,27 @@ function renderDict(data) {
       <div class="dict-ex">📝 ${d.ex}</div>
       <div style="display:flex;gap:8px;margin-top:10px">
         <button class="btn sm secondary" onclick="speakText('${d.bm.replace(/'/g,"\\'")}')">🔊 Listen</button>
-        <button class="btn sm secondary" onclick="toast('⭐ Added to favorites!')">☆ Favorite</button>
+        <button class="btn sm secondary" onclick="toggleFavorite(${d.id}, this)">${fav?'⭐ Favorited':'☆ Favorite'}</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+}
+async function toggleFavorite(wordId, btn) {
+  if (!session.user) { toast('Sign in to save favorites.'); return; }
+  try {
+    if (session.favoriteIds.has(wordId)) {
+      await api('/favorites/'+wordId, { method:'DELETE' });
+      session.favoriteIds.delete(wordId);
+      if (btn) btn.textContent='☆ Favorite';
+      toast('Removed from favorites.');
+    } else {
+      await api('/favorites', { method:'POST', body:{ wordId } });
+      session.favoriteIds.add(wordId);
+      if (btn) btn.textContent='⭐ Favorited';
+      toast('⭐ Added to favorites!');
+    }
+    document.getElementById('profileSaved').textContent = session.favoriteIds.size;
+  } catch (e) { toast('❌ ' + e.message); }
 }
 function searchDict() {
   const q=document.getElementById('dictQ').value.toLowerCase().trim();
@@ -1792,76 +1841,77 @@ function commTab(tab, btn) {
   if(tab==='history') buildHistory();
   if(tab==='leaderboard') buildLeaderboard();
 }
-function submitWord() {
+async function submitWord() {
   const en=document.getElementById('c-en').value.trim();
   const bm=document.getElementById('c-bm').value.trim();
   const cat=document.getElementById('c-cat').value;
   const pron=document.getElementById('c-pron').value.trim();
   const ex=document.getElementById('c-ex').value.trim();
   if(!en||!bm){toast('English and Bemba fields are required.');return;}
-  const entry={type:'word',en,bm,cat,pron,ex,by:session.user.name,status:'pending',time:new Date().toISOString()};
-  db.pending.push(entry);
-  session.user.pts+=2; session.contribs++;
-  document.getElementById('profilePts').textContent=session.user.pts;
-  document.getElementById('profileContribs').textContent=session.contribs;
-  logActivity(`"${en}" submitted by ${session.user.name}`,'gold');
-  ['c-en','c-bm','c-pron','c-ex'].forEach(id=>document.getElementById(id).value='');
-  toast('✅ Submitted! Awaiting review. +2 pts');
-  updatePendingBadge();
+  try {
+    const { user } = await api('/dictionary/suggest', { method:'POST', body:{ en, bm, cat, pron, ex } });
+    session.user.pts = user.pts; session.contribs++;
+    document.getElementById('profilePts').textContent=user.pts;
+    document.getElementById('profileContribs').textContent=session.contribs;
+    logActivity(`"${en}" submitted by ${session.user.name}`,'gold');
+    ['c-en','c-bm','c-pron','c-ex'].forEach(id=>document.getElementById(id).value='');
+    toast('✅ Submitted! Awaiting review. +2 pts');
+    await updatePendingBadge();
+  } catch (e) { toast('❌ ' + e.message); }
 }
-function updatePendingBadge() {
+async function updatePendingBadge() {
+  if (session.user && (session.user.role==='admin'||session.user.role==='moderator')) await loadPending();
   const n=db.pending.filter(p=>p.status==='pending').length;
   document.getElementById('pendingCount').textContent=n;
   document.getElementById('pendingBadge').textContent=`${n} pending`;
   const dot=document.getElementById('notifDot');
   dot.style.display=n>0?'block':'none';
 }
-function buildPending() {
+async function buildPending() {
   const u=session.user;
   const canReview=u.role==='admin'||u.role==='moderator';
+  if (canReview) await loadPending();
   const rows=db.pending;
-  document.getElementById('pendingTbl').innerHTML=rows.length?rows.map((p,i)=>`
+  document.getElementById('pendingTbl').innerHTML=rows.length?rows.map((p)=>`
     <tr>
       <td>${p.en}</td><td>${p.bm||p.suggested||'—'}</td><td>${p.cat||'—'}</td>
       <td>${p.by}</td>
       <td><span class="badge ${p.status}">${p.status}</span></td>
       <td>${canReview&&p.status==='pending'?`
-        <button class="btn sm success" onclick="reviewItem(${i},'approved')">✓ Approve</button>
-        <button class="btn sm danger" style="margin-left:4px" onclick="reviewItem(${i},'rejected')">✗ Reject</button>`:
+        <button class="btn sm success" onclick="reviewItem(${p.id},'approved')">✓ Approve</button>
+        <button class="btn sm danger" style="margin-left:4px" onclick="reviewItem(${p.id},'rejected')">✗ Reject</button>`:
         (p.status==='pending'?'Awaiting review':'')}
       </td>
     </tr>`).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--g500);padding:20px">No submissions yet.</td></tr>';
 }
-function reviewItem(i, status) {
-  db.pending[i].status=status;
-  if(status==='approved') {
-    const p=db.pending[i];
-    if(p.type==='word'&&p.en&&p.bm) {
-      db.words.push({id:db.words.length+1,en:p.en,bm:p.bm,cat:p.cat||'General',pron:p.pron||'—',ex:p.ex||'—',contrib:p.by,status:'approved'});
-      dictData=db.words; // refresh dict
+async function reviewItem(id, status) {
+  try {
+    const { entry } = await api(`/dictionary/pending/${id}/review`, { method:'POST', body:{ status } });
+    if (status==='approved') {
+      await loadDictionary();
+      toast(`✅ Approved! Contributor awarded ${entry.type==='correction'?5:10} pts.`);
+      logActivity(`"${entry.en}" approved by ${session.user.name}`,'green');
+    } else {
+      toast('✗ Rejected.');
+      logActivity(`"${entry.en}" rejected by ${session.user.name}`,'red');
     }
-    // Award points to contributor
-    const contributor=db.users.find(u=>u.name===p.by);
-    if(contributor){contributor.pts+=(p.type==='correction'?5:10);if(contributor===session.user)document.getElementById('profilePts').textContent=contributor.pts;}
-    logActivity(`"${p.en}" approved by ${session.user.name}`,'green');
-    toast(`✅ Approved! Contributor awarded ${p.type==='correction'?5:10} pts.`);
-  } else {
-    logActivity(`"${p.en}" rejected by ${session.user.name}`,'red');
-    toast('✗ Rejected.');
-  }
-  buildPending(); updatePendingBadge(); buildDashboard();
+    await buildPending(); await updatePendingBadge(); await loadLeaderboard(); buildDashboard();
+  } catch (e) { toast('❌ ' + e.message); }
 }
-function buildHistory() {
-  const u=session.user;
-  const mine=db.pending.filter(p=>p.by===u.name);
-  document.getElementById('historyTbl').innerHTML=mine.length?mine.map(p=>`
-    <tr>
-      <td>${p.en}</td><td>${p.bm||p.suggested||'—'}</td><td>${p.cat||'—'}</td>
-      <td><span class="badge ${p.status}">${p.status}</span></td>
-      <td>${p.status==='approved'?(p.type==='correction'?'5':'10'):'—'}</td>
-    </tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:var(--g500);padding:20px">No contributions yet. Submit a word to get started!</td></tr>';
+async function buildHistory() {
+  try {
+    await loadMyContributions();
+    const entries = db.myPending;
+    document.getElementById('historyTbl').innerHTML=entries.length?entries.map(p=>`
+      <tr>
+        <td>${p.en}</td><td>${p.bm||p.suggested||'—'}</td><td>${p.cat||'—'}</td>
+        <td><span class="badge ${p.status}">${p.status}</span></td>
+        <td>${p.status==='approved'?(p.type==='correction'?'5':'10'):'—'}</td>
+      </tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:var(--g500);padding:20px">No contributions yet. Submit a word to get started!</td></tr>';
+  } catch (e) { /* ignore */ }
 }
-function buildLeaderboard() {
+async function buildLeaderboard() {
+  await loadLeaderboard();
   const sorted=[...db.users].sort((a,b)=>b.pts-a.pts);
   const medals=['🥇','🥈','🥉'];
   document.getElementById('lbBody').innerHTML=sorted.map((u,i)=>`
@@ -1876,39 +1926,48 @@ function buildLeaderboard() {
 /* ══════════════════════════════════════════
    USERS (admin)
 ══════════════════════════════════════════ */
-function buildUsersTable() {
-  document.getElementById('userCount').textContent=`${db.users.length} users`;
-  document.getElementById('usersTbl').innerHTML=db.users.map((u,i)=>`
-    <tr>
-      <td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:50%;background:${u.color};display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#fff">${u.initials}</div>${u.name}</div></td>
-      <td>${u.email}</td>
-      <td><span class="badge ${u.role}">${u.role}</span></td>
-      <td>${u.pts}</td>
-      <td><span class="badge ${u.status==='active'?'approved':'rejected'}">${u.status}</span></td>
-      <td>
-        ${u.id!==session.user.id?`<button class="btn sm ${u.status==='active'?'danger':'success'}" onclick="toggleUserStatus(${i})">${u.status==='active'?'Suspend':'Activate'}</button>`:'<span style="color:var(--g500);font-size:.75rem">You</span>'}
-      </td>
-    </tr>`).join('');
+async function buildUsersTable() {
+  try {
+    const { users } = await api('/users');
+    db.allUsers = users;
+    document.getElementById('userCount').textContent=`${users.length} users`;
+    document.getElementById('usersTbl').innerHTML=users.map((u)=>`
+      <tr>
+        <td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:50%;background:${u.color};display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#fff">${u.initials}</div>${u.name}</div></td>
+        <td>${u.email}</td>
+        <td><span class="badge ${u.role}">${u.role}</span></td>
+        <td>${u.pts}</td>
+        <td><span class="badge ${u.status==='active'?'approved':'rejected'}">${u.status}</span></td>
+        <td>
+          ${u.id!==session.user.id?`<button class="btn sm ${u.status==='active'?'danger':'success'}" onclick="toggleUserStatus(${u.id})">${u.status==='active'?'Suspend':'Activate'}</button>`:'<span style="color:var(--g500);font-size:.75rem">You</span>'}
+        </td>
+      </tr>`).join('');
+  } catch (e) { toast('❌ ' + e.message); }
 }
-function toggleUserStatus(i) {
-  db.users[i].status=db.users[i].status==='active'?'suspended':'active';
-  logActivity(`User "${db.users[i].name}" ${db.users[i].status} by admin`,'red');
-  buildUsersTable();
-  toast(`User ${db.users[i].status==='active'?'activated':'suspended'}.`);
+async function toggleUserStatus(id) {
+  try {
+    const { user } = await api(`/users/${id}/status`, { method:'PATCH' });
+    logActivity(`User "${user.name}" ${user.status} by admin`,'red');
+    await buildUsersTable();
+    toast(`User ${user.status==='active'?'activated':'suspended'}.`);
+  } catch (e) { toast('❌ ' + e.message); }
 }
 
 /* ══════════════════════════════════════════
    PROFILE
 ══════════════════════════════════════════ */
-function saveProfile() {
+async function saveProfile() {
   const name=document.getElementById('editName').value.trim();
   const email=document.getElementById('editEmail').value.trim();
   if(!name||!email){toast('Fill in all fields.');return;}
-  session.user.name=name; session.user.email=email;
-  document.getElementById('profileName').textContent=name;
-  document.getElementById('profileMeta').textContent=`${session.user.role.charAt(0).toUpperCase()+session.user.role.slice(1)} · ${email}`;
-  document.getElementById('sbName').textContent=name;
-  toast('✅ Profile updated.');
+  try {
+    const { user } = await api('/auth/me', { method:'PUT', body:{ name, email } });
+    session.user.name=user.name; session.user.email=user.email;
+    document.getElementById('profileName').textContent=user.name;
+    document.getElementById('profileMeta').textContent=`${session.user.role.charAt(0).toUpperCase()+session.user.role.slice(1)} · ${user.email}`;
+    document.getElementById('sbName').textContent=user.name;
+    toast('✅ Profile updated.');
+  } catch (e) { toast('❌ ' + e.message); }
 }
 
 /* ══════════════════════════════════════════
@@ -1933,7 +1992,14 @@ document.addEventListener('keydown', e=>{
 /* ══════════════════════════════════════════
    INIT
 ══════════════════════════════════════════ */
-updatePendingBadge();
+(async function init() {
+  const resumed = await tryResumeSession();
+  if (!resumed) {
+    // Preload the public dictionary so it's ready once someone signs in / guests through
+    await loadDictionary();
+    updatePendingBadge();
+  }
+})();
 </script>
 </body>
 </html>
