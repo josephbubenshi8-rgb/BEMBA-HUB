@@ -1232,6 +1232,32 @@ body.dark .login-connecting .spin { border-color: rgba(230,168,50,.3); border-to
           </div>
         </div>
 
+        <!-- ── TRANSLATION MEMORY (admin) ── -->
+        <div class="card" style="margin-top:16px">
+          <div class="card-head">
+            <span class="card-title">🧠 Translation Memory</span>
+            <button class="btn secondary sm" onclick="loadTranslationMemoryStats()">↻ Refresh</button>
+          </div>
+          <div class="card-body">
+            <div class="stats-grid" style="margin-bottom:16px">
+              <div class="stat-card gold"><div class="stat-icon">💾</div><div class="stat-value" id="tmSaved">–</div><div class="stat-label">Saved Translations</div></div>
+              <div class="stat-card green"><div class="stat-icon">♻️</div><div class="stat-value" id="tmReuses">–</div><div class="stat-label">Total Reuses</div></div>
+              <div class="stat-card sky"><div class="stat-icon">🌍</div><div class="stat-value" id="tmPairs">–</div><div class="stat-label">Language Pairs</div></div>
+            </div>
+            <div class="card-grid">
+              <div class="card">
+                <div class="card-head"><span class="card-title">🌍 Usage by Language Pair</span></div>
+                <div class="card-body" id="tmByPair"><p style="color:var(--g500);font-size:.82rem">Loading…</p></div>
+              </div>
+              <div class="card">
+                <div class="card-head"><span class="card-title">🕘 Recently Saved / Reused</span></div>
+                <div class="card-body" id="tmRecent"><p style="color:var(--g500);font-size:.82rem">Loading…</p></div>
+              </div>
+            </div>
+            <p id="tmUpdated" style="font-size:.72rem;color:var(--g500);margin-top:10px"></p>
+          </div>
+        </div>
+
         <!-- ── DICTIONARY GROWTH (auto-captured from real translations) ── -->
         <div class="card" style="margin-top:16px">
           <div class="card-head"><span class="card-title">📖 Dictionary Growth</span></div>
@@ -2262,6 +2288,48 @@ async function reportPostPrompt(id) {
 /* ══════════════════════════════════════════
    ANALYTICS + MODERATION (admin)
 ══════════════════════════════════════════ */
+async function loadTranslationMemoryStats() {
+  try {
+    const tm = await api('/admin/translation-memory/stats');
+    const summary = tm.summary || {};
+    document.getElementById('tmSaved').textContent = Number(summary.saved_entries || 0).toLocaleString();
+    document.getElementById('tmReuses').textContent = Number(summary.total_reuses || 0).toLocaleString();
+    document.getElementById('tmPairs').textContent = Number(summary.language_pairs || 0).toLocaleString();
+
+    const pairEl = document.getElementById('tmByPair');
+    const pairs = tm.byLanguagePair || [];
+    pairEl.innerHTML = pairs.length ? pairs.map(p => {
+      const src = (LANGUAGES[p.source_lang] || {name:p.source_lang,flag:''});
+      const tgt = (LANGUAGES[p.target_lang] || {name:p.target_lang,flag:''});
+      return '<div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--g100);font-size:.82rem">' +
+        '<span>' + escapeHtml(src.flag + ' ' + src.name) + ' → ' + escapeHtml(tgt.flag + ' ' + tgt.name) + '</span>' +
+        '<span><b>' + Number(p.saved_entries || 0).toLocaleString() + '</b> saved · <b>' + Number(p.total_reuses || 0).toLocaleString() + '</b> reused</span>' +
+      '</div>';
+    }).join('') : '<p style="color:var(--g500);font-size:.82rem">No translation-memory entries yet.</p>';
+
+    const recentEl = document.getElementById('tmRecent');
+    const recent = tm.recent || [];
+    recentEl.innerHTML = recent.length ? recent.slice(0,10).map(r => {
+      const src = (LANGUAGES[r.source_lang] || {name:r.source_lang,flag:''});
+      const tgt = (LANGUAGES[r.target_lang] || {name:r.target_lang,flag:''});
+      const sourceText = escapeHtml(String(r.source_text || '').slice(0,90));
+      const targetText = escapeHtml(String(r.target_text || '').slice(0,90));
+      return '<div style="padding:8px 0;border-bottom:1px solid var(--g100);font-size:.8rem">' +
+        '<div style="font-weight:600;color:var(--g900)">' + sourceText + ' → ' + targetText + '</div>' +
+        '<div style="color:var(--g500);margin-top:3px">' + escapeHtml(src.name) + ' → ' + escapeHtml(tgt.name) +
+        ' · ' + Number(r.usage_count || 0).toLocaleString() + ' reuse' + (Number(r.usage_count || 0) === 1 ? '' : 's') + '</div>' +
+      '</div>';
+    }).join('') : '<p style="color:var(--g500);font-size:.82rem">No recent entries yet.</p>';
+
+    document.getElementById('tmUpdated').textContent = summary.last_updated_at
+      ? 'Last updated: ' + new Date(summary.last_updated_at).toLocaleString()
+      : 'No translation-memory data yet.';
+  } catch (e) {
+    document.getElementById('tmByPair').innerHTML = '<p style="color:var(--red);font-size:.82rem">Unable to load translation memory statistics.</p>';
+    document.getElementById('tmRecent').innerHTML = '<p style="color:var(--g500);font-size:.82rem">Check your admin session and try again.</p>';
+  }
+}
+
 async function loadAnalytics() {
   try {
     const a = await api('/analytics');
@@ -2296,6 +2364,7 @@ async function loadAnalytics() {
   loadReports();
   loadDictStats();
   loadDictCandidates();
+  loadTranslationMemoryStats();
 }
 
 /* ══════════════════════════════════════════
