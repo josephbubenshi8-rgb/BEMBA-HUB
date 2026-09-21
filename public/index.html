@@ -1237,7 +1237,7 @@ body.dark .login-connecting .spin { border-color: rgba(230,168,50,.3); border-to
           <div class="card-head">
             <span class="card-title">🧠 Translation Memory</span>
             <div style="display:flex;gap:6px;flex-wrap:wrap">
-              <button class="btn secondary sm" onclick="loadStarterDictionaryPack()">📚 Load Starter Pack</button><button class="btn secondary sm" onclick="loadLiseliDictionary()">🌍 Load 7-Language Pack</button>
+              <button class="btn secondary sm" onclick="loadStarterDictionaryPack()">📚 Load Starter Pack</button><button class="btn secondary sm" onclick="loadLiseliDictionary()">🌍 Import All 7 Languages</button>
               <button class="btn secondary sm" onclick="loadTranslationMemoryStats()">↻ Refresh</button>
             </div>
           </div>
@@ -1257,7 +1257,7 @@ body.dark .login-connecting .spin { border-color: rgba(230,168,50,.3); border-to
                 <div class="card-body" id="tmRecent"><p style="color:var(--g500);font-size:.82rem">Loading…</p></div>
               </div>
             </div>
-            <p id="tmUpdated" style="font-size:.72rem;color:var(--g500);margin-top:10px"></p>
+            <p id="tmUpdated" style="font-size:.72rem;color:var(--g500);margin-top:10px"></p><div id="liseliProgress"></div>
           </div>
         </div>
 
@@ -2291,19 +2291,48 @@ async function reportPostPrompt(id) {
 /* ══════════════════════════════════════════
    ANALYTICS + MODERATION (admin)
 ══════════════════════════════════════════ */
-async function loadLiseliDictionary() {
+async async function loadLiseliDictionary() {
   if (!session.user || session.user.role !== 'admin') { toast('Admin access required.'); return; }
-  const language = prompt('Enter language: all, bemba, nyanja, tonga, lozi, luvale, lunda, or kaonde', 'bemba');
-  if (!language) return;
-  const maxRows = prompt('How many dataset rows should be processed? Start with 5000 for a safe first import.', '5000');
-  if (!maxRows) return;
-  if (!confirm(`Load Liseli ${language} dictionary data? Imported entries will retain their verified/unverified status.`)) return;
+  if (!confirm('Start the FULL Liseli 7-language dictionary import? Bemba, Nyanja, Tonga, Lozi, Luvale, Lunda and Kaonde will be imported automatically. The job runs in the background and can resume after a restart.')) return;
   try {
-    toast('⏳ Import started. This may take a little while…');
-    const result = await api('/admin/dictionary/import-liseli', { method:'POST', body:{ language: language.trim().toLowerCase(), maxRows:Number(maxRows) } });
-    toast(`✅ Liseli import complete: ${Number(result.importedCount || 0).toLocaleString()} imported.`);
-    await loadAnalytics();
+    const result = await api('/admin/dictionary/import-liseli/start', { method:'POST', body:{} });
+    toast('🌍 Full 7-language import started. You can keep using BembaHub.');
+    monitorLiseliImport(result.job?.id);
   } catch (e) { toast('❌ ' + e.message); }
+}
+
+let liseliMonitorTimer = null;
+async function monitorLiseliImport(jobId) {
+  if (liseliMonitorTimer) clearTimeout(liseliMonitorTimer);
+  try {
+    const result = await api('/admin/dictionary/import-liseli/status?id=' + encodeURIComponent(jobId));
+    const job = result.job;
+    if (!job) return;
+    const total = Number(job.total_rows || 43010);
+    const processed = Number(job.processed_rows || 0);
+    const imported = Number(job.imported_count || 0);
+    const pct = Math.min(100, Math.round((processed / total) * 100));
+    const statusEl = document.getElementById('liseliProgress');
+    if (statusEl) {
+      statusEl.innerHTML = '<div style="margin-top:12px;padding:10px;border:1px solid var(--g200);border-radius:10px">' +
+        '<div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:6px"><b>🌍 7-Language Import</b><span>' + pct + '% · ' + processed.toLocaleString() + ' / ' + total.toLocaleString() + '</span></div>' +
+        '<div style="height:8px;background:var(--g100);border-radius:99px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:var(--green,#22c55e);border-radius:99px"></div></div>' +
+        '<div style="font-size:.75rem;color:var(--g500);margin-top:6px">Imported: ' + imported.toLocaleString() + ' · Status: ' + escapeHtml(job.status) + (job.error_message ? ' · ' + escapeHtml(job.error_message) : '') + '</div>' +
+      '</div>';
+    }
+    if (job.status === 'completed') {
+      toast('✅ All 7 languages imported: ' + imported.toLocaleString() + ' entries.');
+      await loadAnalytics();
+      return;
+    }
+    if (job.status === 'failed') {
+      toast('❌ Import stopped: ' + (job.error_message || 'unknown error'));
+      return;
+    }
+    liseliMonitorTimer = setTimeout(() => monitorLiseliImport(jobId), 3000);
+  } catch (e) {
+    liseliMonitorTimer = setTimeout(() => monitorLiseliImport(jobId), 5000);
+  }
 }
 
 async function loadStarterDictionaryPack() {
