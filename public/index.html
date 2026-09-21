@@ -1236,7 +1236,10 @@ body.dark .login-connecting .spin { border-color: rgba(230,168,50,.3); border-to
         <div class="card" style="margin-top:16px">
           <div class="card-head">
             <span class="card-title">🧠 Translation Memory</span>
-            <button class="btn secondary sm" onclick="loadTranslationMemoryStats()">↻ Refresh</button>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <button class="btn secondary sm" onclick="loadStarterDictionaryPack()">📚 Load Starter Pack</button>
+              <button class="btn secondary sm" onclick="loadTranslationMemoryStats()">↻ Refresh</button>
+            </div>
           </div>
           <div class="card-body">
             <div class="stats-grid" style="margin-bottom:16px">
@@ -2288,6 +2291,16 @@ async function reportPostPrompt(id) {
 /* ══════════════════════════════════════════
    ANALYTICS + MODERATION (admin)
 ══════════════════════════════════════════ */
+async function loadStarterDictionaryPack() {
+  if (!session.user || session.user.role !== 'admin') { toast('Admin access required.'); return; }
+  if (!confirm('Load the BembaHub English→Bemba starter candidate pack? Entries will remain UNVERIFIED until reviewed.')) return;
+  try {
+    const result = await api('/admin/dictionary/import-starter', { method:'POST', body:{} });
+    toast(`✅ Starter pack loaded: ${Number(result.importedCount || 0).toLocaleString()} imported, ${Number(result.skippedCount || 0).toLocaleString()} skipped.`);
+    await loadAnalytics();
+  } catch (e) { toast('❌ ' + e.message); }
+}
+
 async function loadTranslationMemoryStats() {
   try {
     const tm = await api('/admin/translation-memory/stats');
