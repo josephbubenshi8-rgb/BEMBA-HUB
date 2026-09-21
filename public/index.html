@@ -2291,7 +2291,7 @@ async function reportPostPrompt(id) {
 /* ══════════════════════════════════════════
    ANALYTICS + MODERATION (admin)
 ══════════════════════════════════════════ */
-async async function loadLiseliDictionary() {
+async function loadLiseliDictionary() {
   if (!session.user || session.user.role !== 'admin') { toast('Admin access required.'); return; }
   if (!confirm('Start the FULL Liseli 7-language dictionary import? Bemba, Nyanja, Tonga, Lozi, Luvale, Lunda and Kaonde will be imported automatically. The job runs in the background and can resume after a restart.')) return;
   try {
