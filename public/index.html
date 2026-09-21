@@ -1237,7 +1237,7 @@ body.dark .login-connecting .spin { border-color: rgba(230,168,50,.3); border-to
           <div class="card-head">
             <span class="card-title">🧠 Translation Memory</span>
             <div style="display:flex;gap:6px;flex-wrap:wrap">
-              <button class="btn secondary sm" onclick="loadStarterDictionaryPack()">📚 Load Starter Pack</button>
+              <button class="btn secondary sm" onclick="loadStarterDictionaryPack()">📚 Load Starter Pack</button><button class="btn secondary sm" onclick="loadLiseliDictionary()">🌍 Load 7-Language Pack</button>
               <button class="btn secondary sm" onclick="loadTranslationMemoryStats()">↻ Refresh</button>
             </div>
           </div>
@@ -2291,6 +2291,21 @@ async function reportPostPrompt(id) {
 /* ══════════════════════════════════════════
    ANALYTICS + MODERATION (admin)
 ══════════════════════════════════════════ */
+async function loadLiseliDictionary() {
+  if (!session.user || session.user.role !== 'admin') { toast('Admin access required.'); return; }
+  const language = prompt('Enter language: all, bemba, nyanja, tonga, lozi, luvale, lunda, or kaonde', 'bemba');
+  if (!language) return;
+  const maxRows = prompt('How many dataset rows should be processed? Start with 5000 for a safe first import.', '5000');
+  if (!maxRows) return;
+  if (!confirm(`Load Liseli ${language} dictionary data? Imported entries will retain their verified/unverified status.`)) return;
+  try {
+    toast('⏳ Import started. This may take a little while…');
+    const result = await api('/admin/dictionary/import-liseli', { method:'POST', body:{ language: language.trim().toLowerCase(), maxRows:Number(maxRows) } });
+    toast(`✅ Liseli import complete: ${Number(result.importedCount || 0).toLocaleString()} imported.`);
+    await loadAnalytics();
+  } catch (e) { toast('❌ ' + e.message); }
+}
+
 async function loadStarterDictionaryPack() {
   if (!session.user || session.user.role !== 'admin') { toast('Admin access required.'); return; }
   if (!confirm('Load the BembaHub English→Bemba starter candidate pack? Entries will remain UNVERIFIED until reviewed.')) return;
