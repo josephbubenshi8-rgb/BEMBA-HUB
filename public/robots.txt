@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://josephbubenshi8-rgb.github.io/BEMBA-HUB/sitemap.xml
