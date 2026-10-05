@@ -3221,7 +3221,13 @@ function buildCatFilters(cats) {
   if (sf && sf.children.length<=1) sf.insertAdjacentHTML('beforeend', langOpts);
   if (tf && tf.children.length<=1) tf.insertAdjacentHTML('beforeend', langOpts);
 }
-function filterCat(cat) { renderDict(dictData.filter(d=>d.cat===cat), true); }
+async function filterCat(cat) {
+  try {
+    const { words } = await api('/dictionary?cat=' + encodeURIComponent(cat), { auth:false });
+    dictData = words || [];
+    renderDict(dictData, true);
+  } catch (e) { toast('❌ ' + e.message); }
+}
 function quickSearch(q) { goPanel('dictionary'); document.getElementById('dictQ').value=q; searchDict(); }
 
 /* ══════════════════════════════════════════
