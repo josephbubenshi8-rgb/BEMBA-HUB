@@ -3212,8 +3212,8 @@ async function searchDict() {
     renderDict(dictData, !!(q || src || tgt));
   } catch (e) { toast('❌ ' + e.message); }
 }
-function buildCatFilters() {
-  const cats=[...new Set(dictData.map(d=>d.cat))];
+function buildCatFilters(cats) {
+  cats = Array.isArray(cats) && cats.length ? cats : [...new Set(dictData.map(d=>d.cat))];
   document.getElementById('catFilters').innerHTML=cats.map(c=>`
     <button class="btn sm secondary" onclick="filterCat('${jsAttr(c)}')" style="border-radius:20px">${escapeHtml(c)}</button>`).join('');
   const langOpts = Object.entries(LANGUAGES).map(([code,l])=>`<option value="${code}">${l.flag} ${l.name}</option>`).join('');
