@@ -3199,14 +3199,18 @@ async function submitReport() {
     toast('🚩 Report submitted — thank you for helping keep the dictionary accurate.');
   } catch (e) { toast('❌ ' + e.message); }
 }
-function searchDict() {
-  const q=document.getElementById('dictQ').value.toLowerCase().trim();
+async function searchDict() {
+  const q=document.getElementById('dictQ').value.trim();
   const src=document.getElementById('dictSrcFilter').value, tgt=document.getElementById('dictTgtFilter').value;
-  let results = dictData;
-  if (src) results = results.filter(d=>d.source_lang===src);
-  if (tgt) results = results.filter(d=>d.target_lang===tgt);
-  if (q) results = results.filter(d=>d.en.toLowerCase().includes(q)||d.bm.toLowerCase().includes(q)||d.cat.toLowerCase().includes(q));
-  renderDict(results, !!(q||src||tgt));
+  const params = new URLSearchParams();
+  if (q) params.set('q', q);
+  if (src) params.set('sourceLang', src);
+  if (tgt) params.set('targetLang', tgt);
+  try {
+    const { words } = await api('/dictionary' + (params.toString() ? '?' + params.toString() : ''), { auth:false });
+    dictData = words || [];
+    renderDict(dictData, !!(q || src || tgt));
+  } catch (e) { toast('❌ ' + e.message); }
 }
 function buildCatFilters() {
   const cats=[...new Set(dictData.map(d=>d.cat))];
