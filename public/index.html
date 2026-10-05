@@ -630,6 +630,183 @@ body.dark .login-connecting .spin { border-color: rgba(230,168,50,.3); border-to
   transition: left .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2);
 }
 .toggle.on::after { left:21px; }
+
+/* ═══════════════════ BEMBAHUB 2.0 — RESPONSIVE POLISH ═══════════════════ */
+:root{
+  --sidebar-w:252px;
+  --topbar-h:64px;
+  --radius:14px;
+  --shadow-sm:0 2px 10px rgba(45,21,6,.06);
+  --shadow:0 8px 28px rgba(45,21,6,.09);
+  --shadow-lg:0 18px 50px rgba(45,21,6,.16);
+}
+html{scroll-behavior:smooth}
+body{background:linear-gradient(135deg,var(--cream) 0%,#fff 55%,var(--cream) 100%)}
+body.dark{background:var(--cream)}
+button,.btn,.topbar-btn,.sb-item,.tab,.role-chip,.guest-btn,.password-toggle{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(230,168,50,.28);outline-offset:2px}
+
+/* Desktop shell */
+#sidebar{box-shadow:10px 0 30px rgba(45,21,6,.08)}
+.sb-brand{height:64px;padding:16px 18px}
+.sb-brand-icon{width:34px;height:34px;border-radius:10px}
+.sb-item{margin:2px 10px;padding:11px 12px;border-left:0;border-radius:10px}
+.sb-item.active{border-left:0;box-shadow:inset 3px 0 0 var(--gold),0 4px 12px rgba(230,168,50,.08)}
+#topbar{height:64px;padding:0 24px;box-shadow:0 1px 0 var(--g200)}
+.topbar-toggle{width:40px;height:40px}
+.topbar-search{border:1px solid var(--g200);background:var(--g50);height:40px}
+.topbar-btn{width:40px;height:40px}
+#content{scrollbar-gutter:stable}
+.panel{max-width:1440px;margin:0 auto;width:100%;padding:30px clamp(20px,3vw,40px) 42px}
+.page-head{margin-bottom:22px}
+.page-head h1{font-size:clamp(1.35rem,2vw,1.7rem);letter-spacing:-.025em}
+.page-head p{font-size:.86rem}
+.card{border-radius:16px;box-shadow:var(--shadow-sm);transition:box-shadow .2s ease,transform .2s ease}
+.card:hover{box-shadow:var(--shadow)}
+.card-head{padding:15px 20px}
+.card-body{padding:20px}
+.btn{min-height:40px;border-radius:10px}
+.btn.sm{min-height:34px}
+.form-input,.form-select,.form-textarea{min-height:44px;border-radius:10px}
+.stats-grid{gap:16px}
+.stat-card{border-radius:16px;padding:20px}
+.stat-value{font-size:2rem}
+
+/* Translator: make the primary task visually dominant */
+#panel-translate>.card:first-of-type{border:1px solid rgba(230,168,50,.28);box-shadow:0 12px 35px rgba(45,21,6,.08)}
+#panel-translate .trans-row{gap:16px}
+#panel-translate .trans-box{border-radius:14px}
+#panel-translate .trans-box textarea{min-height:190px;font-size:1rem;padding:18px}
+#panel-translate .trans-box-output{min-height:190px;padding:18px;font-size:1.02rem}
+#panel-translate>.card:first-of-type .card-body>div:last-child{gap:10px}
+.trans-swap-btn{box-shadow:0 5px 14px rgba(230,168,50,.25)}
+
+/* Dictionary */
+.dict-entry{border-radius:14px;padding:18px;box-shadow:var(--shadow-sm);transition:transform .18s ease,box-shadow .18s ease}
+.dict-entry:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.dict-en{font-size:1.15rem}
+.dict-bm{font-size:1.35rem}
+
+/* Better touch ergonomics */
+.sb-item,.topbar-btn,.tab,.btn{min-height:40px}
+.role-chip{min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+
+/* ═══════════════════ PHONE ═══════════════════ */
+@media(max-width:768px){
+  :root{--topbar-h:60px;--radius:13px}
+  body{font-size:14px}
+  #app{min-height:100dvh;height:100dvh}
+  #sidebar{width:min(86vw,300px)!important;box-shadow:18px 0 40px rgba(0,0,0,.22)}
+  #sideOverlay{backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+  #topbar{height:60px;padding:0 12px;gap:8px;position:sticky;top:0}
+  .topbar-title{font-size:.9rem}
+  .topbar-sub{display:none}
+  .topbar-actions{gap:2px}
+  .topbar-btn{width:42px;height:42px;font-size:1.05rem}
+  .topbar-avatar{width:38px;height:38px}
+  .panel{padding:18px 14px 32px}
+  .page-head{margin-bottom:17px}
+  .page-head-row{gap:12px}
+  .page-head h1{font-size:1.35rem}
+  .page-head p{font-size:.8rem;line-height:1.45}
+  .page-head-row>.btn{width:100%;justify-content:center}
+  .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
+  .stat-card{padding:15px 13px;border-radius:13px}
+  .stat-icon{font-size:1.25rem;margin-bottom:8px}
+  .stat-value{font-size:1.45rem}
+  .stat-label{font-size:.68rem;line-height:1.25}
+  .stat-delta{font-size:.66rem}
+  .card{margin-bottom:12px;border-radius:14px}
+  .card-head{padding:13px 14px}
+  .card-body{padding:15px}
+  .card-title{font-size:.84rem}
+  .card-grid{grid-template-columns:1fr;gap:12px}
+  .btn{min-height:44px;padding:9px 14px}
+  .btn.sm{min-height:38px;padding:7px 11px}
+  .form-input,.form-select,.form-textarea{min-height:46px;font-size:16px}
+  .form-select{width:100%!important}
+  .form-row{grid-template-columns:1fr}
+  .tabs{margin-left:-15px;margin-right:-15px;padding:0 15px}
+  .tab{padding:11px 14px;min-height:46px}
+  
+  /* Dashboard */
+  #wordOfDayCard .card-body{padding:17px}
+  #wordOfDayCard .card-body>button{width:100%;justify-content:center}
+  
+  /* Translator */
+  #panel-translate .card-body{padding:14px}
+  #panel-translate .card-body>div:first-child{gap:8px!important;margin-bottom:12px!important}
+  #panel-translate .card-body>div:first-child .form-select{flex:1;min-width:0}
+  #panel-translate .trans-row{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+  #panel-translate .trans-row>div:nth-child(2){display:none}
+  #panel-translate .trans-box{width:100%;border-radius:13px}
+  #panel-translate .trans-box-head{padding:10px 13px}
+  #panel-translate .trans-box textarea{min-height:135px;padding:14px;font-size:16px}
+  #panel-translate .trans-box-output{min-height:135px;padding:14px;font-size:1rem}
+  #panel-translate .card-body>div:last-child{display:grid!important;grid-template-columns:1fr 1fr;gap:8px!important}
+  #panel-translate .card-body>div:last-child .btn:first-child{grid-column:1/-1}
+  #panel-translate .card-body>div:last-child .btn{width:100%;justify-content:center}
+  
+  /* Camera / voice */
+  .drop-zone{padding:30px 16px}
+  .drop-zone h3{font-size:.9rem}
+  .mic-wrap{padding:24px 0 16px}
+  .mic-ring,.mic-btn{width:104px;height:104px}
+  .mic-btn{font-size:2rem}
+  
+  /* Dictionary */
+  #panel-dictionary .card-body{padding:12px}
+  #panel-dictionary .card-body>div:first-child{display:grid!important;grid-template-columns:1fr 1fr;gap:8px!important}
+  #panel-dictionary #dictQ{grid-column:1/-1;min-width:0!important}
+  #panel-dictionary #dictSrcFilter,#panel-dictionary #dictTgtFilter{width:100%!important}
+  #panel-dictionary .card-body>div:first-child .btn{width:100%;justify-content:center}
+  #panel-dictionary .dict-entry{padding:15px;margin-bottom:10px}
+  .dict-en{font-size:1.05rem}
+  .dict-bm{font-size:1.25rem}
+  
+  /* Tables become horizontally scrollable instead of breaking the page */
+  .tbl-wrap{margin:0 -2px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{min-width:620px}
+  
+  /* Notifications and search */
+  .notif-dropdown{position:fixed;top:60px;left:8px;right:8px;width:auto;max-height:65dvh;border-radius:14px}
+  .search-suggest{position:fixed;top:60px;left:12px;right:12px;max-width:none}
+  
+  /* Login */
+  #loginGate{padding:12px}
+  .login-card{max-width:480px;border-radius:18px;max-height:calc(100dvh - 24px);overflow:auto}
+  .login-head{padding:24px 20px 18px}
+  .login-body{padding:20px}
+  .login-role-select{gap:8px}
+  .role-chip{min-width:0}
+  
+  /* Toast stays above mobile navigation / browser UI */
+  #toast{bottom:max(18px,env(safe-area-inset-bottom));left:12px;right:12px;transform:none;max-width:none}
+  @keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+}
+
+/* Small phones */
+@media(max-width:390px){
+  .panel{padding-left:10px;padding-right:10px}
+  #topbar{padding-left:8px;padding-right:8px}
+  .topbar-btn{width:38px;height:38px}
+  .topbar-avatar{width:36px;height:36px}
+  .stats-grid{gap:8px}
+  .stat-card{padding:13px 10px}
+  .stat-value{font-size:1.3rem}
+  #panel-translate .card-body>div:last-child{grid-template-columns:1fr}
+  #panel-translate .card-body>div:last-child .btn:first-child{grid-column:auto}
+  #panel-dictionary .card-body>div:first-child{grid-template-columns:1fr}
+  #panel-dictionary #dictQ{grid-column:auto}
+}
+
+/* Landscape phones */
+@media(max-width:768px) and (orientation:landscape){
+  #sidebar{width:270px!important}
+  .panel{padding-top:14px}
+  .trans-box textarea,.trans-box-output{min-height:105px!important}
+}
+
 </style>
 </head>
 <body>
