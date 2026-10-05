@@ -1967,10 +1967,10 @@ async function enterPortal(user) {
 ══════════════════════════════════════════ */
 async function loadDictionary() {
   try {
-    const { words } = await api('/dictionary', { auth:false });
-    db.words = words; dictData = words;
+    const { words, categories } = await api('/dictionary', { auth:false });
+    db.words = words; dictData = words; db.categories = categories || [];
     const el = document.getElementById('dictResults');
-    if (el) { renderDict(dictData); buildCatFilters(); }
+    if (el) { renderDict(dictData); buildCatFilters(db.categories); }
   } catch (e) { /* leave dictionary empty on failure */ }
 }
 async function loadLeaderboard() {
