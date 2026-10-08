@@ -531,6 +531,11 @@ tr:hover td { background: var(--g50); }
 .login-logo { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--gold); font-weight: 700; margin-bottom: 4px; }
 .login-logo span { color: rgba(255,255,255,.7); font-weight: 300; }
 .login-tagline { font-size: .78rem; color: rgba(255,255,255,.5); }
+.seo-intro{padding:0 24px 20px;color:var(--g700);font-size:.78rem;line-height:1.55;text-align:center}
+.seo-intro h1{font-size:1.02rem;line-height:1.35;color:var(--g900);margin:0 0 7px;font-weight:700}
+.seo-intro p{margin:0 auto;max-width:350px}
+.seo-intro strong{color:var(--earth);font-weight:600}
+@media(max-height:720px){#loginGate.show{align-items:flex-start;overflow-y:auto}.login-card{margin:auto 0}}
 .login-body { padding: 28px; }
 .login-tabs { display: flex; margin-bottom: 24px; border-bottom: 2px solid var(--g200); }
 .login-tab {
@@ -949,6 +954,10 @@ body.dark{background:radial-gradient(circle at 85% 0%,rgba(230,168,50,.07),trans
         <button class="btn primary" id="registerBtn" style="width:100%;justify-content:center;padding:11px" onclick="doRegister()">Create Account</button>
       </div>
     </div>
+    <section class="seo-intro" aria-labelledby="bembahub-intro-title">
+      <h1 id="bembahub-intro-title">English–Bemba Translation and Dictionary</h1>
+      <p><strong>BembaHub</strong> helps people explore the Bemba language through English ↔ Bemba translation, dictionary lookup, and language-learning tools. Discover Bemba words and expressions while supporting the preservation of Zambia’s language heritage.</p>
+    </section>
   </div>
 </div>
 
