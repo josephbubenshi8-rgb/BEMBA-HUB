@@ -3415,7 +3415,7 @@ function renderDict(data, hasQuery) {
       ${ant.length?`<div style="font-size:.78rem;color:var(--g700)"><b>Antonyms:</b> ${ant.join(', ')}</div>`:''}
       ${d.usage_count?`<div style="font-size:.72rem;color:var(--g500);margin-top:4px">Used ${d.usage_count} time${d.usage_count===1?'':'s'}</div>`:''}
       <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-        <button class="btn sm secondary" onclick="speakText('${d.bm.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">🔊 Listen</button>
+        <button class="btn sm secondary" onclick="speakText('${jsAttr(d.bm)}')">🔊 Listen</button>
         <button class="btn sm secondary" onclick="toggleFavorite(${d.id}, this)">${fav?'⭐ Favorited':'☆ Favorite'}</button>
         <button class="btn sm secondary" onclick="openReportModal(${d.id})">🚩 Report</button>
       </div>
