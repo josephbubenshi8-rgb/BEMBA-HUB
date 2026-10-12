@@ -880,6 +880,119 @@ body.dark{background:radial-gradient(circle at 85% 0%,rgba(230,168,50,.07),trans
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important;}
 }
 
+
+/* ═══════════════════ BEMBAHUB VISUAL REFRESH ═══════════════════
+   Presentation-only overrides: keep existing markup, routes and app logic.
+*/
+:root {
+  --earth:#142a24;
+  --copper:#159b67;
+  --gold:#f2b84b;
+  --gold-light:#fff4d8;
+  --bark:#142a24;
+  --cream:#f4f7f5;
+  --green:#16845b;
+  --green-light:#e4f6ed;
+  --sky:#2563c7;
+  --sky-light:#e8f0ff;
+  --purple:#7650c8;
+  --purple-light:#f0eaff;
+  --g50:#fbfdfc;
+  --g100:#f1f5f3;
+  --g200:#e2eae6;
+  --g300:#d0ddd6;
+  --g500:#7a8b82;
+  --g700:#45584e;
+  --g900:#172a20;
+  --radius:16px;
+  --shadow-sm:0 2px 8px rgba(20,42,36,.05);
+  --shadow:0 8px 24px rgba(20,42,36,.08);
+  --shadow-lg:0 18px 48px rgba(20,42,36,.14);
+}
+body.dark {
+  --bark:#101c19;
+  --earth:#101c19;
+  --copper:#36c58b;
+  --gold:#f2bd58;
+}
+html { scroll-behavior:smooth; }
+body { letter-spacing:-.01em; }
+button,input,select,textarea { transition:box-shadow .18s ease,border-color .18s ease,background-color .18s ease,transform .18s ease; }
+:focus-visible { outline:3px solid rgba(37,99,199,.48); outline-offset:2px; }
+#sidebar {
+  background:linear-gradient(180deg,#17372d 0%,#122820 55%,#10231d 100%);
+  box-shadow:8px 0 28px rgba(14,40,30,.08);
+}
+.sb-brand { height:66px; padding:16px 17px; border-bottom-color:rgba(255,255,255,.1); }
+.sb-brand-icon {
+  background:linear-gradient(135deg,#f6c768,#f0a832);
+  border-radius:11px; box-shadow:0 4px 12px rgba(242,184,75,.2);
+}
+.sb-brand-text { font-size:1.08rem; letter-spacing:-.035em; }
+.sb-brand-text span { color:#6fe0a9; }
+.sb-nav { padding:14px 10px; }
+.sb-section-label { padding:16px 12px 7px; color:rgba(226,245,235,.48); letter-spacing:.13em; }
+.sb-item {
+  margin:3px 0; padding:11px 12px; gap:12px; border-left:0;
+  border-radius:11px; color:rgba(244,255,249,.72);
+}
+.sb-item:hover { background:rgba(255,255,255,.09); color:#fff; transform:translateX(2px); }
+.sb-item.active {
+  background:linear-gradient(100deg,rgba(65,197,132,.22),rgba(65,197,132,.08));
+  color:#8df0b8; box-shadow:inset 3px 0 #55d994;
+}
+.sb-icon { font-size:1.12rem; }
+.sb-footer { border-top-color:rgba(255,255,255,.1); padding:12px 8px; }
+.sb-user { border-radius:12px; padding:10px; }
+#topbar {
+  height:68px; padding:0 26px; gap:14px;
+  background:var(--white); border-bottom-color:var(--g200);
+}
+.topbar-toggle { width:38px; height:38px; border-radius:11px; }
+.topbar-title { font-size:1rem; letter-spacing:-.025em; }
+.topbar-search { border:1px solid transparent; background:var(--g100); border-radius:13px; padding:9px 13px; }
+.topbar-search:focus-within { border-color:#9bd9b8; background:var(--white); box-shadow:0 0 0 3px rgba(22,132,91,.08); }
+.topbar-search input { width:190px; }
+.topbar-btn { width:38px; height:38px; border-radius:12px; }
+#main { min-width:0; }
+#content,.content,.page-content,.main-content { background:var(--cream); }
+.card,.panel,.stat-card,.feature-card,.word-card,.dict-card,.translator-card,.settings-card {
+  border-radius:18px; border-color:var(--g200);
+  box-shadow:var(--shadow-sm);
+}
+.card:hover,.feature-card:hover,.word-card:hover,.dict-card:hover {
+  box-shadow:var(--shadow); transform:translateY(-2px);
+}
+button,.btn,.primary-btn,.btn-primary {
+  border-radius:11px;
+}
+input:not([type=checkbox]):not([type=radio]),select,textarea {
+  border-radius:11px;
+}
+input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus {
+  border-color:#69bd91; box-shadow:0 0 0 3px rgba(22,132,91,.1); outline:none;
+}
+::-webkit-scrollbar { width:9px; height:9px; }
+::-webkit-scrollbar-thumb { background:#c7d7cd; border:2px solid transparent; background-clip:padding-box; border-radius:20px; }
+::-webkit-scrollbar-thumb:hover { background:#9eb9a8; border:2px solid transparent; background-clip:padding-box; }
+@media (max-width:900px) {
+  #topbar { padding:0 15px; height:62px; }
+  .topbar-search input { width:120px; }
+  .sb-nav { padding-left:7px; padding-right:7px; }
+}
+@media (max-width:600px) {
+  #topbar { gap:8px; padding:0 12px; }
+  .topbar-search { padding:8px 10px; max-width:42vw; }
+  .topbar-search input { width:100%; min-width:0; }
+  .topbar-actions { gap:3px; }
+  .topbar-btn { width:34px; height:34px; }
+  .sb-brand { padding-left:12px; }
+  .sb-item { padding:11px 10px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  *,*::before,*::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+}
+
 </style>
 </head>
 <body>
