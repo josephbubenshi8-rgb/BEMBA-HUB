@@ -993,6 +993,64 @@ input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus {
   *,*::before,*::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
 }
 
+
+/* ═══ Reference-inspired dashboard layout ═══ */
+#panel-dashboard{padding:18px 20px 28px;max-width:1600px;margin:0 auto;width:100%}
+.bh-welcome-hero{position:relative;isolation:isolate;overflow:hidden;min-height:240px;border-radius:19px;margin-bottom:18px;padding:28px;display:flex;align-items:center;color:#fff;background:linear-gradient(105deg,rgba(4,27,43,.92) 0%,rgba(12,43,65,.58) 46%,rgba(28,42,54,.12) 100%),url('https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1800&q=85') center 52%/cover,#123b4d;box-shadow:0 12px 30px rgba(16,42,59,.14)}
+.bh-welcome-hero:after{content:"";position:absolute;inset:auto 0 0;height:35%;background:linear-gradient(0deg,rgba(4,22,34,.36),transparent);z-index:-1}
+.bh-hero-copy{max-width:900px;position:relative;z-index:1}
+.bh-eyebrow{font-size:.68rem;font-weight:800;letter-spacing:.18em;color:#c8f3d8;margin-bottom:8px}
+.bh-welcome-hero h1{font-size:clamp(1.8rem,3vw,2.6rem);line-height:1.1;letter-spacing:-.045em;color:#fff;margin:0 0 9px}
+.bh-welcome-hero #dashSub{font-size:.95rem;line-height:1.55;color:rgba(255,255,255,.9);max-width:470px;margin:0}
+.bh-hero-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:23px}
+.bh-pill{display:flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.22);padding:10px 13px;border-radius:13px;color:#fff;text-align:left;cursor:pointer;box-shadow:0 5px 16px rgba(0,0,0,.14);transition:transform .18s ease,filter .18s ease}
+.bh-pill:hover{transform:translateY(-2px);filter:brightness(1.07)}
+.bh-pill strong,.bh-pill small{display:block}.bh-pill strong{font-size:.76rem}.bh-pill small{font-size:.65rem;opacity:.85;margin-top:2px}
+.bh-pill-icon{font-size:1.35rem;line-height:1}.bh-pill-green{background:linear-gradient(135deg,#119b63,#08744b)}.bh-pill-purple{background:linear-gradient(135deg,#7652eb,#5934ce)}.bh-pill-orange{background:linear-gradient(135deg,#f28b20,#e96b13)}.bh-pill-blue{background:linear-gradient(135deg,#078ee5,#1262c8)}
+.bh-hero-script{position:absolute;right:28px;bottom:26px;font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.15rem,2vw,1.9rem);line-height:1.02;text-align:right;transform:rotate(-7deg);text-shadow:0 2px 10px rgba(0,0,0,.4);color:#fff}.bh-hero-script span{display:block;text-align:right}
+.bh-dashboard-grid{display:grid;grid-template-columns:minmax(0,1.85fr) minmax(270px,.9fr);gap:16px;align-items:start}
+.bh-dashboard-main,.bh-dashboard-side{display:grid;gap:16px;min-width:0}
+.bh-quick-card,.bh-content-card{background:var(--white);border:1px solid var(--g200);border-radius:17px;padding:18px;box-shadow:var(--shadow-sm);min-width:0}
+.bh-section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+.bh-section-head>div{display:flex;align-items:center;gap:11px;min-width:0}
+.bh-section-icon{width:36px;height:36px;display:grid;place-items:center;flex:0 0 auto;border-radius:12px;background:#e7f1ff;font-size:1.1rem}
+.bh-section-head h2{font-size:1rem;line-height:1.25;color:var(--g900);margin:0;font-weight:750;letter-spacing:-.025em}
+.bh-section-head p{font-size:.72rem;color:var(--g500);margin:4px 0 0;line-height:1.4}
+.bh-language-chip{white-space:nowrap;background:#edf5ff;color:#1767bb;border-radius:20px;padding:8px 12px;font-size:.72rem;font-weight:700}
+.bh-quick-preview{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bh-quick-language{min-height:118px;border:1px solid var(--g200);border-radius:13px;padding:15px;display:flex;align-items:flex-start;gap:8px;background:linear-gradient(150deg,#fff,#f8fbff);color:var(--g900)}
+.bh-language-dot{font-size:1.2rem}.bh-muted{margin-left:auto;color:var(--g500)}
+.bh-quick-hint{font-size:.76rem;color:var(--g500);line-height:1.55;margin:12px 0}
+.bh-translate-cta{width:100%;border:0;border-radius:11px;padding:13px 16px;background:linear-gradient(100deg,#078fe8,#6544f5);color:#fff;font-weight:750;font-size:.82rem;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 5px 14px rgba(53,105,224,.17)}
+.bh-translate-cta:hover{filter:brightness(1.05);transform:translateY(-1px)}.bh-translate-cta span:last-child{margin-left:auto}
+.bh-lower-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch}
+.bh-compact-head{margin-bottom:14px}.bh-compact-head .bh-section-icon{width:32px;height:32px;border-radius:10px}
+.bh-text-link{border:0;background:none;color:#176bc1;font-weight:700;font-size:.72rem;white-space:nowrap;cursor:pointer}
+.bh-word-feature{border-radius:13px;padding:16px;background:linear-gradient(140deg,#e4f7ed,#f7fcf9);color:#143c2b;min-height:175px}
+.bh-word-label{font-size:.63rem;font-weight:800;letter-spacing:.12em;color:#25835b}
+.bh-word-en{font-size:1.18rem;font-weight:800;margin-top:8px}.bh-word-bm{font-size:1rem;color:#087d54;font-weight:700;margin-top:2px}.bh-word-ex{font-size:.74rem;color:#4e7463;margin-top:6px}
+.bh-listen-word{margin-top:12px;border:0;border-radius:9px;padding:7px 10px;background:#fff;color:#176b4c;font-size:.7rem;font-weight:700;cursor:pointer}
+.bh-dictionary-art{min-height:120px;border-radius:13px;display:flex;align-items:center;justify-content:center;gap:14px;background:linear-gradient(135deg,#eaf4ff,#f3efff);font-size:2.6rem;color:#3268b5}
+.bh-dictionary-art span{font-size:.9rem;font-weight:750;line-height:1.5;color:#24486f}.bh-dictionary-cta{margin-top:12px}
+.bh-existing-activity{display:grid;grid-template-columns:1fr 1fr;gap:20px}.bh-existing-activity h3{font-size:.8rem;margin-bottom:10px;color:var(--g900)}
+.bh-feature-link{width:100%;border:0;border-radius:12px;padding:10px;display:flex;align-items:center;gap:10px;text-align:left;cursor:pointer;margin-top:8px;transition:transform .18s ease,filter .18s ease}
+.bh-feature-link:hover{transform:translateX(2px);filter:saturate(1.08)}.bh-feature-link>span:nth-child(2){flex:1;min-width:0}.bh-feature-link strong,.bh-feature-link small{display:block}.bh-feature-link strong{font-size:.75rem}.bh-feature-link small{font-size:.65rem;margin-top:3px;opacity:.78}.bh-feature-link>b{font-size:1.35rem;font-weight:400}
+.bh-feature-symbol{width:40px;height:40px;flex:0 0 auto;display:grid;place-items:center;border-radius:11px;background:rgba(255,255,255,.75);font-size:1.35rem}
+.feature-green{background:#eaf8f0;color:#17784f}.feature-red{background:#fff0f2;color:#b9324a}.feature-purple{background:#f2edff;color:#6943c6}.feature-orange{background:#fff3e7;color:#c36b16}.feature-blue{background:#eaf4ff;color:#176dc2}
+.bh-progress-card{display:grid;grid-template-columns:1fr;}.bh-progress-ring{width:112px;height:112px;border-radius:50%;margin:4px auto 14px;display:grid;place-items:center;background:conic-gradient(#159b67 0 75%,#e3edf2 75% 100%);position:relative}
+.bh-progress-ring:before{content:"";position:absolute;inset:9px;background:var(--white);border-radius:50%}.bh-progress-ring>div{z-index:1;text-align:center}.bh-progress-ring strong,.bh-progress-ring span{display:block}.bh-progress-ring strong{font-size:1.3rem}.bh-progress-ring span{font-size:.63rem;font-weight:750;color:var(--g700);margin-top:3px}
+.bh-progress-list{list-style:none;display:grid;gap:10px;font-size:.72rem;color:var(--g700)}.bh-progress-list li{display:flex;gap:8px;align-items:center}.bh-progress-list li span{color:#159b67;font-weight:900}
+.bh-community-banner{margin-top:16px;border-radius:17px;padding:18px 22px;display:flex;align-items:center;gap:18px;background:linear-gradient(100deg,#e5f4e9,#eaf3ff 48%,#fff5db);border:1px solid #e1ece5;color:#193a2d}
+.bh-community-illustration{width:64px;height:64px;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle,#d2f0dd,#cde7ff);font-size:2rem;flex:0 0 auto}
+.bh-community-banner>div:nth-child(2){flex:1}.bh-community-banner strong{font-size:.95rem;line-height:1.4}.bh-community-banner p{font-size:.73rem;line-height:1.5;color:#587165;margin-top:4px;max-width:420px}
+.bh-community-banner button{border:0;border-radius:10px;padding:11px 14px;background:#219653;color:#fff;font-size:.73rem;font-weight:750;white-space:nowrap;cursor:pointer}.bh-community-banner button span{margin-left:7px}
+.bh-dynamic-stats{margin-top:16px}.bh-dynamic-stats>h2{font-size:.9rem;margin-bottom:10px;color:var(--g700)}.bh-dynamic-stats .stats-grid{margin-bottom:0}
+#panel-dashboard .stat-card{border-radius:13px;padding:14px;box-shadow:none}
+#panel-dashboard .stat-value{font-size:1.45rem}
+@media(max-width:1100px){.bh-dashboard-grid{grid-template-columns:minmax(0,1fr) 280px}.bh-hero-script{display:none}.bh-lower-grid{grid-template-columns:1fr}.bh-word-feature{min-height:145px}}
+@media(max-width:780px){#panel-dashboard{padding:13px}.bh-welcome-hero{padding:22px 18px;min-height:300px;background-position:58% center}.bh-welcome-hero h1{font-size:1.8rem}.bh-hero-pills{gap:8px}.bh-pill{flex:1 1 calc(50% - 8px);padding:9px}.bh-dashboard-grid{grid-template-columns:1fr}.bh-dashboard-side{grid-template-columns:1fr 1fr;align-items:start}.bh-community-banner{padding:15px;gap:12px}.bh-community-illustration{display:none}}
+@media(max-width:520px){.bh-welcome-hero{min-height:340px;padding:19px 15px}.bh-welcome-hero #dashSub{font-size:.84rem}.bh-hero-pills{display:grid;grid-template-columns:1fr 1fr}.bh-pill{min-width:0;gap:7px}.bh-pill strong{font-size:.69rem}.bh-pill small{font-size:.6rem}.bh-dashboard-side,.bh-lower-grid{grid-template-columns:1fr}.bh-quick-card,.bh-content-card{padding:14px}.bh-section-head h2{font-size:.9rem}.bh-section-head p{font-size:.67rem}.bh-language-chip{font-size:.63rem;padding:7px 8px}.bh-quick-preview{gap:8px}.bh-quick-language{min-height:95px;padding:10px;font-size:.8rem}.bh-existing-activity{grid-template-columns:1fr}.bh-community-banner{align-items:flex-start;flex-wrap:wrap}.bh-community-banner button{width:100%}}
+
 </style>
 </head>
 <body>
@@ -1136,35 +1194,86 @@ input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus {
 
       <!-- ── DASHBOARD ── -->
       <div class="panel active" id="panel-dashboard">
-        <div class="page-head-row">
-          <div class="page-head">
+        <section class="bh-welcome-hero" aria-label="Welcome to BembaHub">
+          <div class="bh-hero-copy">
+            <p class="bh-eyebrow">LEARN · TRANSLATE · CONNECT</p>
             <h1 id="dashTitle">Welcome back</h1>
-            <p id="dashSub">Here's what's happening on BembaHub today.</p>
-          </div>
-          <button class="btn gold" onclick="goPanel('translate')">+ New Translation</button>
-        </div>
-        <div class="stats-grid" id="dashStats"><!-- built by JS --></div>
-        <div class="card" id="wordOfDayCard" style="margin-bottom:16px;background:linear-gradient(135deg,var(--purple),var(--sky));color:#fff;border:none">
-          <div class="card-body" style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
-            <div>
-              <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;opacity:.85">🌟 Word of the Day</div>
-              <div id="wodEn" style="font-size:1.3rem;font-weight:700;margin-top:4px">–</div>
-              <div id="wodBm" style="font-size:1.05rem;opacity:.95">–</div>
-              <div id="wodEx" style="font-size:.8rem;opacity:.8;margin-top:6px"></div>
+            <p id="dashSub">Translate, learn and explore the rich Bemba language with BembaHub.</p>
+            <div class="bh-hero-pills">
+              <button class="bh-pill bh-pill-green" onclick="goPanel('dictionary')"><span class="bh-pill-icon">▤</span><span><strong>Dictionary</strong><small>Words &amp; phrases</small></span></button>
+              <button class="bh-pill bh-pill-purple" onclick="goPanel('translate')"><span class="bh-pill-icon">◎</span><span><strong>Multiple languages</strong><small>Explore and translate</small></span></button>
+              <button class="bh-pill bh-pill-orange" onclick="goPanel('translate')"><span class="bh-pill-icon">✦</span><span><strong>AI-assisted</strong><small>Translation tools</small></span></button>
+              <button class="bh-pill bh-pill-blue" onclick="goPanel('dictionary')"><span class="bh-pill-icon">♡</span><span><strong>Save &amp; revisit</strong><small>Your favourite words</small></span></button>
             </div>
-            <button class="btn secondary" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)" onclick="speakText(document.getElementById('wodBm').textContent)">🔊 Listen</button>
           </div>
+          <div class="bh-hero-script" aria-hidden="true">Bemba<br>connects us <span>♡</span></div>
+        </section>
+
+        <div class="bh-dashboard-grid">
+          <div class="bh-dashboard-main">
+            <section class="bh-quick-card">
+              <div class="bh-section-head">
+                <div><span class="bh-section-icon">🔤</span><div><h2>Quick Translation</h2><p>Translate a word or phrase in just a few steps.</p></div></div>
+                <span class="bh-language-chip">Bemba ↔ English</span>
+              </div>
+              <div class="bh-quick-preview">
+                <div class="bh-quick-language"><span class="bh-language-dot">🇿🇲</span><strong>Bemba</strong><span class="bh-muted">→</span></div>
+                <div class="bh-quick-language"><span class="bh-language-dot">🇬🇧</span><strong>English</strong><span class="bh-muted">↔</span></div>
+              </div>
+              <p class="bh-quick-hint">Open the full translator to enter text, switch languages, listen, copy and save your translations.</p>
+              <button class="bh-translate-cta" onclick="goPanel('translate')"><span>✦</span> Open Translator <span>→</span></button>
+            </section>
+
+            <div class="bh-lower-grid">
+              <section class="bh-content-card">
+                <div class="bh-section-head bh-compact-head"><div><span class="bh-section-icon">🔥</span><div><h2>Word of the Day</h2><p>A little Bemba learning every day.</p></div></div><button class="bh-text-link" onclick="goPanel('dictionary')">Dictionary →</button></div>
+                <div class="bh-word-feature" id="wordOfDayCard">
+                  <div class="bh-word-label">TODAY'S WORD</div>
+                  <div id="wodEn" class="bh-word-en">–</div>
+                  <div id="wodBm" class="bh-word-bm">–</div>
+                  <div id="wodEx" class="bh-word-ex"></div>
+                  <button class="bh-listen-word" onclick="speakText(document.getElementById('wodBm').textContent)">🔊 Listen to pronunciation</button>
+                </div>
+              </section>
+              <section class="bh-content-card bh-dictionary-card">
+                <div class="bh-section-head bh-compact-head"><div><span class="bh-section-icon">📚</span><div><h2>Bemba Dictionary</h2><p>Explore words and their meanings.</p></div></div></div>
+                <div class="bh-dictionary-art" aria-hidden="true">📖 <span>Learn a word.<br>Share a culture.</span></div>
+                <button class="bh-translate-cta bh-dictionary-cta" onclick="goPanel('dictionary')">Browse Dictionary <span>→</span></button>
+              </section>
+            </div>
+
+            <section class="bh-content-card bh-activity-card">
+              <div class="bh-section-head bh-compact-head"><div><span class="bh-section-icon">📈</span><div><h2>Community Activity</h2><p>Recent activity and top contributors.</p></div></div></div>
+              <div class="card-grid bh-existing-activity">
+                <div><h3>Recent Activity</h3><div id="dashActivity"><!-- built by JS --></div></div>
+                <div><h3>Top Contributors</h3><div id="dashLeaderboard"><!-- built by JS --></div></div>
+              </div>
+            </section>
+          </div>
+
+          <aside class="bh-dashboard-side">
+            <section class="bh-content-card bh-features-card">
+              <div class="bh-section-head bh-compact-head"><div><span class="bh-section-icon">⭐</span><div><h2>Popular Features</h2><p>Jump back into your tools.</p></div></div></div>
+              <button class="bh-feature-link feature-green" onclick="goPanel('dictionary')"><span class="bh-feature-symbol">▤</span><span><strong>Dictionary Search</strong><small>Find words and meanings</small></span><b>›</b></button>
+              <button class="bh-feature-link feature-red" onclick="goPanel('dictionary')"><span class="bh-feature-symbol">♡</span><span><strong>My Saved Words</strong><small>Keep favourite words close</small></span><b>›</b></button>
+              <button class="bh-feature-link feature-purple" onclick="goPanel('translate')"><span class="bh-feature-symbol">◷</span><span><strong>Translation History</strong><small>Revisit past translations</small></span><b>›</b></button>
+              <button class="bh-feature-link feature-orange" onclick="goPanel('dictionary')"><span class="bh-feature-symbol">⇧</span><span><strong>Import Documents</strong><small>Bring in words and text</small></span><b>›</b></button>
+              <button class="bh-feature-link feature-blue" onclick="goPanel('chat')"><span class="bh-feature-symbol">✦</span><span><strong>AI Assistant</strong><small>Language help and guidance</small></span><b>›</b></button>
+            </section>
+            <section class="bh-content-card bh-progress-card">
+              <div class="bh-section-head bh-compact-head"><div><span class="bh-section-icon">🌍</span><div><h2>Your Progress</h2><p>Keep growing your Bemba skills.</p></div></div></div>
+              <div class="bh-progress-ring"><div><strong>🌱</strong><span>Keep learning</span></div></div>
+              <ul class="bh-progress-list"><li><span>✓</span> Explore the dictionary</li><li><span>✓</span> Try the translator</li><li><span>✓</span> Save words to revisit</li></ul>
+            </section>
+          </aside>
         </div>
-        <div class="card-grid">
-          <div class="card">
-            <div class="card-head"><span class="card-title">📊 Recent Activity</span></div>
-            <div class="card-body" id="dashActivity"><!-- built by JS --></div>
-          </div>
-          <div class="card">
-            <div class="card-head"><span class="card-title">🏆 Top Contributors</span></div>
-            <div class="card-body" id="dashLeaderboard"><!-- built by JS --></div>
-          </div>
-        </div>
+
+        <section class="bh-community-banner">
+          <div class="bh-community-illustration" aria-hidden="true">🌿</div>
+          <div><strong>Small words make<br>big connections. 💚</strong><p>“Bemba is more than a language — it connects people, culture and opportunity.”</p></div>
+          <button onclick="goPanel('dictionary')">Explore BembaHub <span>→</span></button>
+        </section>
+        <div class="bh-dynamic-stats"><h2>At a glance</h2><div class="stats-grid" id="dashStats"><!-- built by JS --></div></div>
         <!-- Admin-only quick panels -->
         <div id="adminQuickPanel" style="display:none">
           <div class="card-grid">
