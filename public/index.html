@@ -1085,6 +1085,23 @@ input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus {
 @media(max-width:780px){#topbar{min-height:64px;padding:10px 12px;gap:9px}.topbar-search{max-width:none;min-height:39px}.topbar-title{display:none}.topbar-actions{gap:3px}.topbar-btn{width:36px;height:36px}}
 @media(prefers-reduced-motion:reduce){#sbNav button,#sbNav a,.sb-user,.topbar-btn{transition:none}}
 
+
+/* ═══ Final brand and dashboard polish ═══ */
+.sb-brand-icon{width:43px;height:43px;padding:2px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(145deg,#eaf9f0,#eef6ff);box-shadow:0 6px 18px rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.45);overflow:hidden}
+.sb-brand-icon svg{display:block;width:39px;height:39px}
+.sb-brand-text{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:1.32rem;font-weight:850;letter-spacing:-.055em}
+.bh-welcome-hero{background-image:linear-gradient(105deg,rgba(3,24,41,.9) 0%,rgba(9,36,57,.58) 50%,rgba(20,35,45,.08) 100%),url('https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1800&q=85')}
+.bh-quick-card,.bh-content-card{transition:box-shadow .2s ease,border-color .2s ease}
+.bh-quick-card:hover,.bh-content-card:hover{border-color:#d8e5ee;box-shadow:0 10px 28px rgba(20,50,72,.07)}
+.bh-section-icon{box-shadow:inset 0 0 0 1px rgba(50,100,150,.06)}
+.bh-quick-language{position:relative;overflow:hidden}
+.bh-quick-language:after{content:"";position:absolute;inset:auto 0 0;height:3px;background:linear-gradient(90deg,#168ee9,#7652eb);opacity:.7}
+.bh-feature-link{border:1px solid rgba(28,60,85,.035)}
+.bh-community-banner{overflow:hidden;position:relative}
+.bh-community-banner:after{content:"";width:140px;height:140px;position:absolute;right:20%;top:-95px;border:1px solid rgba(26,133,83,.14);border-radius:50%;pointer-events:none}
+#panel-dashboard button:focus-visible,#sidebar button:focus-visible,#topbar button:focus-visible{outline:3px solid #7db8f5;outline-offset:3px}
+@media(max-width:520px){.sb-brand{padding:12px 10px;gap:8px}.sb-brand-icon{width:38px;height:38px}.sb-brand-icon svg{width:34px;height:34px}.sb-brand-text{font-size:1.12rem}.bh-hero-pills .bh-pill-icon{font-size:1.12rem}}
+
 </style>
 </head>
 <body>
@@ -1172,7 +1189,14 @@ input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus {
   <!-- SIDEBAR -->
   <nav id="sidebar">
     <div class="sb-brand">
-      <div class="sb-brand-icon">B</div>
+      <div class="sb-brand-icon" role="img" aria-label="BembaHub language connection logo">
+        <svg viewBox="0 0 48 48" width="36" height="36" aria-hidden="true" focusable="false">
+          <path d="M7 8.5A5.5 5.5 0 0 1 12.5 3h15A5.5 5.5 0 0 1 33 8.5v8a5.5 5.5 0 0 1-5.5 5.5H18l-7 5v-6.1A5.5 5.5 0 0 1 7 15.5z" fill="#19A96B"/>
+          <path d="M18 17.5A5.5 5.5 0 0 1 23.5 12h13A5.5 5.5 0 0 1 42 17.5v8a5.5 5.5 0 0 1-5.5 5.5H31l-6.5 5v-6A5.5 5.5 0 0 1 18 24.5z" fill="#168BE5"/>
+          <path d="M6 28.5A5.5 5.5 0 0 1 11.5 23h11a5.5 5.5 0 0 1 5.5 5.5v5a5.5 5.5 0 0 1-5.5 5.5H17l-5 3.5v-4A5.5 5.5 0 0 1 6 33.5z" fill="#F2B83F"/>
+          <path d="M14 11h12M12 15h8M25 20h11M25 24h8M12 29h10M12 33h7" stroke="#fff" stroke-width="1.8" stroke-linecap="round" opacity=".95"/>
+        </svg>
+      </div>
       <div class="sb-brand-text">Bemba<span>Hub</span></div>
     </div>
     <div class="sb-nav" id="sbNav"><!-- built by JS --></div>
