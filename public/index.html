@@ -2147,8 +2147,16 @@ async function submitForgotPassword() {
   try {
     const res = await api('/auth/forgot-password', { method:'POST', auth:false, body:{ email }, timeoutMs: 60000, onSlow: () => btn.textContent = 'Still working — the server may be waking up…' });
     const devEl = document.getElementById('forgotDevLink');
-    if (res.devLink) { devEl.style.display='block'; devEl.innerHTML = 'Dev mode (no SMTP configured) — reset link: <a href="'+res.devLink+'">'+res.devLink+'</a>'; }
-    else { devEl.style.display='none'; closeModal('forgotModal'); toast('📧 If that email is registered, a reset link was sent.'); }
+    if (res.devLink) {
+      const resetUrl = new URL(res.devLink, window.location.origin);
+      if (!['http:', 'https:'].includes(resetUrl.protocol)) throw new Error('Invalid development reset link.');
+      devEl.replaceChildren(document.createTextNode('Dev mode (no SMTP configured) — reset link: '));
+      const link = document.createElement('a');
+      link.href = resetUrl.href;
+      link.textContent = resetUrl.href;
+      devEl.appendChild(link);
+      devEl.style.display = 'block';
+    } else { devEl.style.display='none'; closeModal('forgotModal'); toast('📧 If that email is registered, a reset link was sent.'); }
   } catch (e) { toast('❌ ' + e.message); }
   finally { authSubmitInFlight = false; btn.disabled = false; btn.textContent = 'Send Reset Link'; }
 }
