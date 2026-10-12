@@ -2835,7 +2835,7 @@ async function loadReports() {
           <button class="btn sm danger" style="margin-left:4px" onclick="resolveReportAction(${r.id},true)">Remove Post</button>
         </td>
       </tr>`).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--g500);padding:16px">No open reports.</td></tr>';
-  } catch (e) { tbl.innerHTML = `<tr><td colspan="4" style="color:var(--red);text-align:center;padding:16px">❌ ${e.message}</td></tr>`; }
+  } catch (e) { tbl.innerHTML = `<tr><td colspan="4" style="color:var(--red);text-align:center;padding:16px">❌ ${escapeHtml(e.message)}</td></tr>`; }
 }
 async function resolveReportAction(id, removePost) {
   try {
@@ -3133,7 +3133,7 @@ async function camExtract() {
     }
   } catch(err) {
     const msg = (err.code === 'AI_QUOTA_EXCEEDED' || err.code === 'AI_OVERLOADED') ? quotaMessage(err) : `${err.message||'Failed'}. Check your connection.`;
-    document.getElementById('camDetected').innerHTML=`<span style="color:var(--red)">❌ ${msg}</span>`;
+    document.getElementById('camDetected').innerHTML=`<span style="color:var(--red)">❌ ${escapeHtml(msg)}</span>`;
   } finally { btn.disabled=false; btn.innerHTML='🔍 Extract Text'; }
 }
 
@@ -3155,7 +3155,7 @@ async function camDoTranslate() {
     toast('🎉 Translation done!');
     if (session.user) api('/history', { method:'POST', body:{ kind:'camera', input:txt, output:tr, source:result.source, translationMethod:'ocr', sourceLang:session.srcLang, targetLang:session.tgtLang } }).catch(()=>{});
   } catch(err) {
-    document.getElementById('camTranslation').innerHTML=`<span style="color:var(--red)">❌ ${(err.code === 'AI_QUOTA_EXCEEDED' || err.code === 'AI_OVERLOADED') ? quotaMessage(err) : err.message + '. Try again.'}</span>`;
+    document.getElementById('camTranslation').innerHTML=`<span style="color:var(--red)">❌ ${escapeHtml((err.code === 'AI_QUOTA_EXCEEDED' || err.code === 'AI_OVERLOADED') ? quotaMessage(err) : err.message + '. Try again.')}</span>`;
   } finally { btn.disabled=false; btn.innerHTML=`✨ Translate to ${LANGUAGES[session.tgtLang].name}`; }
 }
 
@@ -3367,7 +3367,7 @@ function copyVoice(){const t=document.getElementById('voiceBemba').textContent;i
 function buildVoiceCats() {
   const tabs=document.getElementById('voiceCatTabs'); if(tabs.dataset.init)return;
   const cats=Object.keys(LESSONS);
-  tabs.innerHTML=cats.map((c,i)=>`<button class="tab${i===0?' active':''}" onclick="switchVoiceCat('${c}',this)">${c}</button>`).join('');
+  tabs.innerHTML=cats.map((c,i)=>`<button class="tab${i===0?' active':''}" onclick="switchVoiceCat('${jsAttr(c)}',this)">${escapeHtml(c)}</button>`).join('');
   switchVoiceCat(cats[0],tabs.firstElementChild);
   tabs.dataset.init='1';
 }
