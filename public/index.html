@@ -1051,6 +1051,40 @@ input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus {
 @media(max-width:780px){#panel-dashboard{padding:13px}.bh-welcome-hero{padding:22px 18px;min-height:300px;background-position:58% center}.bh-welcome-hero h1{font-size:1.8rem}.bh-hero-pills{gap:8px}.bh-pill{flex:1 1 calc(50% - 8px);padding:9px}.bh-dashboard-grid{grid-template-columns:1fr}.bh-dashboard-side{grid-template-columns:1fr 1fr;align-items:start}.bh-community-banner{padding:15px;gap:12px}.bh-community-illustration{display:none}}
 @media(max-width:520px){.bh-welcome-hero{min-height:340px;padding:19px 15px}.bh-welcome-hero #dashSub{font-size:.84rem}.bh-hero-pills{display:grid;grid-template-columns:1fr 1fr}.bh-pill{min-width:0;gap:7px}.bh-pill strong{font-size:.69rem}.bh-pill small{font-size:.6rem}.bh-dashboard-side,.bh-lower-grid{grid-template-columns:1fr}.bh-quick-card,.bh-content-card{padding:14px}.bh-section-head h2{font-size:.9rem}.bh-section-head p{font-size:.67rem}.bh-language-chip{font-size:.63rem;padding:7px 8px}.bh-quick-preview{gap:8px}.bh-quick-language{min-height:95px;padding:10px;font-size:.8rem}.bh-existing-activity{grid-template-columns:1fr}.bh-community-banner{align-items:flex-start;flex-wrap:wrap}.bh-community-banner button{width:100%}}
 
+
+/* ═══ Navigation and header finish ═══ */
+#sidebar{background:linear-gradient(180deg,rgba(4,24,43,.98),rgba(4,31,52,.98) 68%,rgba(3,22,39,.97)),url('https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=800&q=80') center bottom/auto 35% no-repeat,#061b30;color:#f5f8fc;border-right:1px solid rgba(255,255,255,.08)}
+.sb-brand{padding:19px 18px 22px;gap:11px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:12px}
+.sb-brand-icon{width:43px;height:43px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(140deg,#14a968 0 34%,#f5b83d 34% 67%,#148de0 67%);color:#fff;font-size:1.35rem;font-weight:900;box-shadow:0 7px 18px rgba(0,0,0,.22);border:2px solid rgba(255,255,255,.3)}
+.sb-brand-text{font-size:1.4rem;letter-spacing:-.055em;color:#fff;font-weight:850}.sb-brand-text span{color:#38bd79}
+#sbNav{padding:0 10px 16px;gap:5px}
+#sbNav button,#sbNav a{border-radius:11px;transition:background .18s ease,transform .18s ease,color .18s ease}
+#sbNav button:hover,#sbNav a:hover{background:rgba(255,255,255,.1);transform:translateX(2px)}
+#sbNav .active,#sbNav .active button,#sbNav button.active{background:linear-gradient(105deg,#168ee9,#2356f4);color:#fff;box-shadow:0 5px 14px rgba(0,83,220,.25)}
+.sb-footer{padding:12px;border-top:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.1)}
+.sb-user{border:1px solid rgba(255,255,255,.12);border-radius:13px;padding:10px;background:rgba(255,255,255,.06);cursor:pointer;transition:background .18s ease}
+.sb-user:hover{background:rgba(255,255,255,.12)}
+.sb-avatar,#topbarAvatar{box-shadow:0 0 0 3px rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.65)}
+.sb-user-name{color:#fff;font-weight:750}.sb-user-role{color:#b6c9dc}
+#main{background:var(--g50,#f5f8fb)}
+#topbar{min-height:76px;padding:12px 22px;gap:15px;background:rgba(255,255,255,.96);border-bottom:1px solid #e6edf2;box-shadow:0 3px 14px rgba(17,45,67,.035);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50}
+.topbar-title{font-size:1rem;font-weight:800;color:#14283e;letter-spacing:-.025em}
+.topbar-search{max-width:500px;flex:1;border:1px solid #e0e9f0;border-radius:12px;background:#f9fbfd;padding:0 12px;min-height:42px;display:flex;align-items:center;gap:8px;transition:border-color .2s ease,box-shadow .2s ease}
+.topbar-search:focus-within{border-color:#8bbdf4;box-shadow:0 0 0 3px rgba(31,130,225,.1);background:#fff}
+.topbar-search input{background:transparent;border:0;outline:0;min-width:0;width:100%;font-size:.78rem;color:#24394d}
+.topbar-search input::placeholder{color:#8798a8}
+.topbar-actions{gap:9px}
+.topbar-btn{width:40px;height:40px;border-radius:12px;color:#263b50;transition:background .18s ease,transform .18s ease}
+.topbar-btn:hover{background:#eef4fa;transform:translateY(-1px)}
+.topbar-toggle{border-radius:10px}
+#content{padding-top:3px}
+.bh-learning-note{display:flex;align-items:center;gap:12px;padding:13px;border-radius:13px;background:linear-gradient(120deg,#e7f7ee,#f1f8ff);border:1px solid #e0efe6;margin:4px 0 15px}
+.bh-learning-sprout{width:43px;height:43px;display:grid;place-items:center;border-radius:12px;background:#fff;font-size:1.45rem;box-shadow:0 2px 8px rgba(22,76,52,.08)}
+.bh-learning-note strong{font-size:.78rem;color:#17563b}.bh-learning-note p{font-size:.69rem;line-height:1.45;color:#547164;margin-top:3px}
+.bh-progress-list li span{width:21px;height:21px;border-radius:50%;display:grid;place-items:center;background:#eaf2ff;color:#2469b8;font-size:.65rem}
+@media(max-width:780px){#topbar{min-height:64px;padding:10px 12px;gap:9px}.topbar-search{max-width:none;min-height:39px}.topbar-title{display:none}.topbar-actions{gap:3px}.topbar-btn{width:36px;height:36px}}
+@media(prefers-reduced-motion:reduce){#sbNav button,#sbNav a,.sb-user,.topbar-btn{transition:none}}
+
 </style>
 </head>
 <body>
@@ -1262,8 +1296,8 @@ input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus {
             </section>
             <section class="bh-content-card bh-progress-card">
               <div class="bh-section-head bh-compact-head"><div><span class="bh-section-icon">🌍</span><div><h2>Your Progress</h2><p>Keep growing your Bemba skills.</p></div></div></div>
-              <div class="bh-progress-ring"><div><strong>🌱</strong><span>Keep learning</span></div></div>
-              <ul class="bh-progress-list"><li><span>✓</span> Explore the dictionary</li><li><span>✓</span> Try the translator</li><li><span>✓</span> Save words to revisit</li></ul>
+              <div class="bh-learning-note"><span class="bh-learning-sprout">🌱</span><div><strong>Your next step</strong><p>Build your Bemba vocabulary one word at a time.</p></div></div>
+              <ul class="bh-progress-list"><li><span>1</span> Explore the dictionary</li><li><span>2</span> Try a translation</li><li><span>3</span> Save a useful word</li></ul>
             </section>
           </aside>
         </div>
