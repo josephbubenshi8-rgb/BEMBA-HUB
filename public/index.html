@@ -2400,7 +2400,7 @@ async function sendChat() {
     box.insertAdjacentHTML('beforeend', chatBubble('assistant', reply));
   } catch (e) {
     document.getElementById('chatTyping')?.remove();
-    box.insertAdjacentHTML('beforeend', `<div style="color:var(--red);font-size:.82rem">❌ ${(e.code === 'AI_QUOTA_EXCEEDED' || e.code === 'AI_OVERLOADED') ? quotaMessage(e) : e.message}</div>`);
+    box.insertAdjacentHTML('beforeend', `<div style="color:var(--red);font-size:.82rem">❌ ${escapeHtml((e.code === 'AI_QUOTA_EXCEEDED' || e.code === 'AI_OVERLOADED') ? quotaMessage(e) : e.message)}</div>`);
   } finally {
     box.scrollTop = box.scrollHeight;
     document.getElementById('chatSendBtn').disabled = false;
