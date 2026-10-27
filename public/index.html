@@ -2004,6 +2004,23 @@ input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus {
             </div>
             <p id="ai-provider-status" role="status" style="font-size:.78rem;color:var(--g500);margin:8px 0 12px">Loading provider status…</p>
             <button class="btn primary" id="ai-provider-save" onclick="saveAIProviderSettings()">Save AI Preference</button>
+            <div style="margin-top:20px;padding-top:18px;border-top:1px solid var(--g200)">
+              <h3 style="margin:0 0 6px;font-size:1rem">🧪 Test one provider directly</h3>
+              <p style="font-size:.8rem;line-height:1.55;color:var(--g600);margin:0 0 12px">This test calls only the selected provider—no automatic fallback—so you can compare results. It does not change your saved provider setting.</p>
+              <div class="form-group">
+                <label class="form-label" for="ai-test-direction">Test direction</label>
+                <select class="form-select" id="ai-test-direction">
+                  <option value="en-bem">English → Bemba</option>
+                  <option value="bem-en">Bemba → English</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="ai-test-text">Test sentence</label>
+                <textarea class="form-input" id="ai-test-text" rows="3" maxlength="3000" placeholder="I am going to the market today because I need to buy food for my family." style="width:100%;resize:vertical"></textarea>
+              </div>
+              <button class="btn primary" id="ai-provider-test" onclick="testAIProvider()">Test Selected Provider</button>
+              <div id="ai-provider-test-result" role="status" aria-live="polite" style="display:none;margin-top:14px;padding:14px;border:1px solid var(--g200);border-radius:12px;white-space:pre-wrap;overflow-wrap:anywhere"></div>
+            </div>
           </div>
         </div>
 <div class="card">
@@ -2360,6 +2377,39 @@ async function loadAIProviderSettings() {
   } catch (e) {
     status.textContent = 'Could not load AI settings: ' + e.message;
     save.disabled = true;
+  }
+}
+
+async function testAIProvider() {
+  if (!session.user || session.user.role !== 'admin') { toast('Admin access required.'); return; }
+  const providerSelect = document.getElementById('ai-primary-provider');
+  const direction = document.getElementById('ai-test-direction').value;
+  const input = document.getElementById('ai-test-text');
+  const button = document.getElementById('ai-provider-test');
+  const result = document.getElementById('ai-provider-test-result');
+  const text = input.value.trim();
+  if (!text) { toast('Enter a sentence to test first.'); input.focus(); return; }
+  if (providerSelect.value === 'auto') { toast('Choose one specific provider above before testing.'); providerSelect.focus(); return; }
+
+  const [srcLang, tgtLang] = direction === 'bem-en' ? ['bem', 'en'] : ['en', 'bem'];
+  button.disabled = true;
+  button.textContent = 'Testing provider…';
+  result.style.display = 'block';
+  result.textContent = 'Sending the test directly to ' + providerSelect.options[providerSelect.selectedIndex].textContent.split(' · ')[0] + '…';
+  result.style.borderColor = 'var(--g200)';
+  try {
+    const data = await api('/admin/ai-provider/test', {
+      method: 'POST',
+      body: { provider: providerSelect.value, text, srcLang, tgtLang }
+    });
+    result.textContent = 'Provider: ' + data.provider + '\\nDirection: ' + srcLang + ' → ' + tgtLang + '\\nTime: ' + data.durationMs + ' ms\\n\\nTranslation:\\n' + data.translation;
+    result.style.borderColor = 'var(--g300)';
+  } catch (e) {
+    result.textContent = 'Provider test failed\\n\\n' + e.message + '\\n\\nNo fallback provider was used.';
+    result.style.borderColor = '#dc6b6b';
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Test Selected Provider';
   }
 }
 
