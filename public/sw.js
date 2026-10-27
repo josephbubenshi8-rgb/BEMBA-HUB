@@ -2,7 +2,7 @@
 // API calls to the backend (a different origin) are always passed straight
 // to the network so translations/auth/etc. never serve stale cached data.
 
-const CACHE_NAME = 'bembahub-shell-v1';
+const CACHE_NAME = 'bembahub-shell-v2';
 const SHELL_FILES = ['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', (event) => {
