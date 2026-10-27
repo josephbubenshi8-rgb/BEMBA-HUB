@@ -1986,7 +1986,27 @@ input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus {
             <div class="setting-row"><div class="setting-info"><strong>Community Notifications</strong><span>Get notified when contributions are reviewed</span></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
           </div>
         </div>
-        <div class="card">
+                <div class="card" id="ai-provider-card" style="display:none">
+          <div class="card-head"><span class="card-title">🤖 AI Translation Provider</span></div>
+          <div class="card-body">
+            <p style="font-size:.82rem;line-height:1.6;color:var(--g600);margin-bottom:14px">Choose which AI BembaHub tries first. If it fails, BembaHub automatically tries the other configured providers. API keys stay on the server and are never shown here.</p>
+            <div class="form-group">
+              <label class="form-label" for="ai-primary-provider">Primary AI</label>
+              <select class="form-select" id="ai-primary-provider">
+                <option value="auto">Automatic failover (recommended)</option>
+                <option value="gemini">Google Gemini</option>
+                <option value="groq">Groq</option>
+                <option value="openrouter">OpenRouter</option>
+                <option value="mistral">Mistral</option>
+                <option value="huggingface">Hugging Face</option>
+                <option value="cloudflare">Cloudflare Workers AI</option>
+              </select>
+            </div>
+            <p id="ai-provider-status" role="status" style="font-size:.78rem;color:var(--g500);margin:8px 0 12px">Loading provider status…</p>
+            <button class="btn primary" id="ai-provider-save" onclick="saveAIProviderSettings()">Save AI Preference</button>
+          </div>
+        </div>
+<div class="card">
           <div class="card-head"><span class="card-title">About BembaHub</span></div>
           <div class="card-body">
             <p style="font-size:.85rem;line-height:1.7;color:var(--g700)">BembaHub is a language technology platform dedicated to preserving, promoting, and making the Bemba language more accessible. Founded by <strong>Joseph Bubenshi</strong>.</p>
@@ -2309,6 +2329,61 @@ function buildNav() {
     `<div class="sb-section-label">${role.toUpperCase()} PORTAL</div>`);
 }
 
+async function loadAIProviderSettings() {
+  const card = document.getElementById('ai-provider-card');
+  if (!card) return;
+  if (!session.user || session.user.role !== 'admin') { card.style.display = 'none'; return; }
+  card.style.display = '';
+  const select = document.getElementById('ai-primary-provider');
+  const status = document.getElementById('ai-provider-status');
+  const save = document.getElementById('ai-provider-save');
+  try {
+    const data = await api('/admin/ai-provider');
+    Array.from(select.options).forEach(option => {
+      if (option.value === 'auto') {
+        option.disabled = false;
+        option.textContent = 'Automatic failover (recommended)';
+      } else {
+        const provider = (data.providers || []).find(p => p.id === option.value);
+        option.disabled = !provider || !provider.configured;
+        option.textContent = provider
+          ? provider.label + (provider.configured ? ' · ready' : ' · API key not configured')
+          : option.textContent;
+      }
+    });
+    select.value = data.provider || 'auto';
+    const ready = (data.providers || []).filter(p => p.configured).map(p => p.label);
+    status.textContent = ready.length
+      ? 'Configured: ' + ready.join(', ') + '. Unconfigured providers need their API keys added in Render.'
+      : 'No provider keys detected. Add at least one AI provider key in Render.';
+    save.disabled = false;
+  } catch (e) {
+    status.textContent = 'Could not load AI settings: ' + e.message;
+    save.disabled = true;
+  }
+}
+
+async function saveAIProviderSettings() {
+  if (!session.user || session.user.role !== 'admin') { toast('Admin access required.'); return; }
+  const select = document.getElementById('ai-primary-provider');
+  const status = document.getElementById('ai-provider-status');
+  const save = document.getElementById('ai-provider-save');
+  save.disabled = true;
+  status.textContent = 'Saving preference…';
+  try {
+    const data = await api('/admin/ai-provider', { method: 'PUT', body: { provider: select.value } });
+    status.textContent = data.provider === 'auto'
+      ? 'Saved. Automatic failover is active.'
+      : 'Saved. ' + select.options[select.selectedIndex].textContent.split(' · ')[0] + ' will be tried first, then other configured providers.';
+    toast('✅ AI provider preference saved.');
+  } catch (e) {
+    status.textContent = 'Could not save: ' + e.message;
+    toast('❌ ' + e.message);
+  } finally {
+    save.disabled = false;
+  }
+}
+
 function goPanel(id, skipNav) {
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   const panel = document.getElementById('panel-'+id);
@@ -2326,6 +2401,7 @@ function goPanel(id, skipNav) {
   if (id==='voice')      { populateVoiceLangSelects(); buildVoiceCats(); }
   if (id==='analytics')  { loadAnalytics(); }
   if (id==='dashboard')  { buildDashboard(); loadWordOfDay(); }
+  if (id==='settings')   { loadAIProviderSettings(); }
   if (id==='chat')       { loadChatHistory(); }
   if (id==='quiz')       { populateQuizLangSelects(); loadQuizHistory(); }
 }
