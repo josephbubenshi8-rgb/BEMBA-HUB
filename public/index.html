@@ -1796,7 +1796,7 @@ input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus {
               <select class="form-select" id="allDictSort" onchange="loadAllDictionary(1)" style="width:auto"><option value="alphabetical">A–Z</option><option value="recent">Newest</option><option value="most_used">Most used</option></select>
               <button class="btn secondary" onclick="loadAllDictionary(1)">Search</button>
             </div>
-            <div class="tbl-wrap"><table><thead><tr><th>Language pair</th><th>English</th><th>Bemba / Translation</th><th>Status</th><th>Source</th></tr></thead><tbody id="allDictTbl"><tr><td colspan="5" style="text-align:center;padding:18px">Press “View All Dictionary Words” to load entries.</td></tr></tbody></table></div>
+            <div class="tbl-wrap"><table><thead><tr><th>Language pair</th><th>Source word / phrase</th><th>Translation</th><th>Status</th><th>Source</th></tr></thead><tbody id="allDictTbl"><tr><td colspan="5" style="text-align:center;padding:18px">Press “View All Dictionary Words” to load entries.</td></tr></tbody></table></div>
             <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;flex-wrap:wrap"><span id="allDictPageInfo" style="font-size:.82rem;color:var(--g500)">Page 1</span><div style="display:flex;gap:8px"><button class="btn secondary sm" id="allDictPrev" onclick="loadAllDictionary(allDictPage-1)" disabled>← Previous</button><button class="btn secondary sm" id="allDictNext" onclick="loadAllDictionary(allDictPage+1)" disabled>Next →</button></div></div>
           </div>
         </div>
