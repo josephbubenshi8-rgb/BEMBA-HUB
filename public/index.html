@@ -1375,7 +1375,7 @@ input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus {
         <div class="bh-dynamic-stats"><h2>At a glance</h2><div class="stats-grid" id="dashStats"><!-- built by JS --></div></div>
         <!-- Admin-only quick panels -->
         <div id="adminQuickPanel" style="display:none">
-          <div class="card" style="margin-bottom:14px"><div class="card-body" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><strong>📚 Complete Dictionary</strong><div style="font-size:.82rem;color:var(--g500);margin-top:4px">Browse every saved English and Bemba entry.</div></div><button class="btn primary" onclick="openAllDictionary()">View All Dictionary Words →</button></div></div>
+          <div id="adminDictionaryShortcut" class="card" style="margin-bottom:14px;display:none"><div class="card-body" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><strong>📚 Complete Dictionary</strong><div style="font-size:.82rem;color:var(--g500);margin-top:4px">Browse every saved entry across all language pairs.</div></div><button class="btn primary" onclick="openAllDictionary()">View All Dictionary Words →</button></div></div>
           <div class="card-grid">
             <div class="card">
               <div class="card-head"><span class="card-title">📈 Translations This Week</span></div>
@@ -3319,6 +3319,7 @@ async function buildDashboard() {
   document.getElementById('dashTitle').textContent = `Welcome back, ${u.name.split(' ')[0]}!`;
   document.getElementById('dashSub').textContent = `You have ${u.pts} points · ${u.role} access`;
   document.getElementById('adminQuickPanel').style.display = (u.role==='admin'||u.role==='moderator') ? 'block':'none';
+  document.getElementById('adminDictionaryShortcut').style.display = u.role==='admin' ? 'block':'none';
 
   const pending = db.pending.filter(p=>p.status==='pending').length;
   let overview = { totalTranslations:0, imageTranslations:0, totalWords: db.words.length, totalUsers: db.users.length, categories:0 };
