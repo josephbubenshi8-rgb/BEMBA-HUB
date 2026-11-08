@@ -1375,6 +1375,7 @@ input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus {
         <div class="bh-dynamic-stats"><h2>At a glance</h2><div class="stats-grid" id="dashStats"><!-- built by JS --></div></div>
         <!-- Admin-only quick panels -->
         <div id="adminQuickPanel" style="display:none">
+          <div id="adminDictionaryShortcut" class="card" style="margin-bottom:14px;display:none"><div class="card-body" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><strong>📚 Complete Dictionary</strong><div style="font-size:.82rem;color:var(--g500);margin-top:4px">Browse every saved entry across all language pairs.</div></div><button class="btn primary" onclick="openAllDictionary()">View All Dictionary Words →</button></div></div>
           <div class="card-grid">
             <div class="card">
               <div class="card-head"><span class="card-title">📈 Translations This Week</span></div>
@@ -1783,6 +1784,22 @@ input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus {
       <!-- ── ANALYTICS (admin) ── -->
       <div class="panel" id="panel-analytics">
         <div class="page-head"><h1>📈 Analytics</h1><p>Live platform usage, pulled from your BembaHub backend</p></div>
+        <div class="card" id="all-dictionary-card" style="margin:0 0 16px;display:none">
+          <div class="card-head"><span class="card-title">📚 All Dictionary Words</span><span id="allDictCount" style="font-size:.8rem;color:var(--g500)">Loading total…</span></div>
+          <div class="card-body">
+            <p style="font-size:.8rem;color:var(--g500);margin:0 0 12px">Read-only view. Nothing here can edit or delete your dictionary records.</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+              <input class="form-input" id="allDictSearch" placeholder="Search English or Bemba…" onkeydown="if(event.key==='Enter')loadAllDictionary(1)" style="flex:1;min-width:180px">
+              <select class="form-select" id="allDictStatus" onchange="loadAllDictionary(1)" style="width:auto"><option value="">All statuses</option><option value="verified">Verified</option><option value="unverified">Unverified</option><option value="rejected">Rejected</option></select>
+              <select class="form-select" id="allDictSrc" onchange="loadAllDictionary(1)" style="width:auto"><option value="">Any source language</option></select>
+              <select class="form-select" id="allDictTgt" onchange="loadAllDictionary(1)" style="width:auto"><option value="">Any target language</option></select>
+              <select class="form-select" id="allDictSort" onchange="loadAllDictionary(1)" style="width:auto"><option value="alphabetical">A–Z</option><option value="recent">Newest</option><option value="most_used">Most used</option></select>
+              <button class="btn secondary" onclick="loadAllDictionary(1)">Search</button>
+            </div>
+            <div class="tbl-wrap"><table><thead><tr><th>Language pair</th><th>Source word / phrase</th><th>Translation</th><th>Status</th><th>Source</th></tr></thead><tbody id="allDictTbl"><tr><td colspan="5" style="text-align:center;padding:18px">Press “View All Dictionary Words” to load entries.</td></tr></tbody></table></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;flex-wrap:wrap"><span id="allDictPageInfo" style="font-size:.82rem;color:var(--g500)">Page 1</span><div style="display:flex;gap:8px"><button class="btn secondary sm" id="allDictPrev" onclick="loadAllDictionary(allDictPage-1)" disabled>← Previous</button><button class="btn secondary sm" id="allDictNext" onclick="loadAllDictionary(allDictPage+1)" disabled>Next →</button></div></div>
+          </div>
+        </div>
         <div class="stats-grid">
           <div class="stat-card gold"><div class="stat-icon">🔤</div><div class="stat-value" id="analytTransToday">–</div><div class="stat-label">Translations Today</div></div>
           <div class="stat-card green"><div class="stat-icon">📚</div><div class="stat-value" id="analytWords">–</div><div class="stat-label">Dictionary Words</div></div>
@@ -3108,6 +3125,49 @@ async function loadAnalytics() {
 }
 
 /* ══════════════════════════════════════════
+   COMPLETE DICTIONARY VIEW — admin, read-only, paginated
+══════════════════════════════════════════ */
+let allDictPage = 1;
+let allDictTotalPages = 1;
+let allDictFiltersReady = false;
+function openAllDictionary() {
+  if (!session.user || session.user.role !== 'admin') { toast('Admin access required.'); return; }
+  goPanel('analytics');
+  const card = document.getElementById('all-dictionary-card');
+  card.style.display = '';
+  if (!allDictFiltersReady) {
+    const opts = Object.entries(LANGUAGES).map(([code,l])=>`<option value="${code}">${l.flag} ${l.name}</option>`).join('');
+    document.getElementById('allDictSrc').insertAdjacentHTML('beforeend', opts);
+    document.getElementById('allDictTgt').insertAdjacentHTML('beforeend', opts);
+    allDictFiltersReady = true;
+  }
+  loadAllDictionary(1);
+  card.scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function loadAllDictionary(page = 1) {
+  if (!session.user || session.user.role !== 'admin') return;
+  const tbody = document.getElementById('allDictTbl');
+  if (!tbody) return;
+  allDictPage = Math.max(1, Number(page) || 1);
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:18px">Loading dictionary entries…</td></tr>';
+  const params = new URLSearchParams({page:String(allDictPage),limit:'50',q:document.getElementById('allDictSearch').value.trim(),status:document.getElementById('allDictStatus').value,sourceLang:document.getElementById('allDictSrc').value,targetLang:document.getElementById('allDictTgt').value,sort:document.getElementById('allDictSort').value});
+  try {
+    const data = await api('/admin/dictionary/all?' + params);
+    allDictTotalPages = data.totalPages || 1;
+    document.getElementById('allDictCount').textContent = Number(data.total||0).toLocaleString() + ' total entries';
+    document.getElementById('allDictPageInfo').textContent = `Page ${data.page} of ${allDictTotalPages} · Showing ${data.entries.length} entries`;
+    document.getElementById('allDictPrev').disabled = data.page <= 1;
+    document.getElementById('allDictNext').disabled = data.page >= allDictTotalPages;
+    tbody.innerHTML = data.entries.length ? data.entries.map(w=>{
+      const sl=LANGUAGES[w.source_lang]||{name:w.source_lang||'—',flag:''}, tl=LANGUAGES[w.target_lang]||{name:w.target_lang||'—',flag:''};
+      return `<tr><td style="white-space:nowrap">${sl.flag} ${escapeHtml(sl.name)} → ${tl.flag} ${escapeHtml(tl.name)}</td><td>${escapeHtml(w.en||'')}</td><td>${escapeHtml(w.bm||'')}</td><td><span class="badge ${escapeHtml(w.status||'')}">${escapeHtml(w.status||'unknown')}</span></td><td>${escapeHtml(w.source||w.contrib||'—')}</td></tr>`;
+    }).join('') : '<tr><td colspan="5" style="text-align:center;padding:18px;color:var(--g500)">No dictionary entries match those filters.</td></tr>';
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:18px;color:var(--red)">Could not load dictionary: ${escapeHtml(e.message)}</td></tr>`;
+  }
+}
+
+/* ══════════════════════════════════════════
    DICTIONARY GROWTH (admin) — auto-captured translation candidates
 ══════════════════════════════════════════ */
 let dgActiveStatus = 'unverified';
@@ -3259,6 +3319,7 @@ async function buildDashboard() {
   document.getElementById('dashTitle').textContent = `Welcome back, ${u.name.split(' ')[0]}!`;
   document.getElementById('dashSub').textContent = `You have ${u.pts} points · ${u.role} access`;
   document.getElementById('adminQuickPanel').style.display = (u.role==='admin'||u.role==='moderator') ? 'block':'none';
+  document.getElementById('adminDictionaryShortcut').style.display = u.role==='admin' ? 'block':'none';
 
   const pending = db.pending.filter(p=>p.status==='pending').length;
   let overview = { totalTranslations:0, imageTranslations:0, totalWords: db.words.length, totalUsers: db.users.length, categories:0 };
